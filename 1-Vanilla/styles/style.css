@@ -1,0 +1,126 @@
+:root {
+    --logo-blue: #0b79a5;
+    --background-blue: #add7e7;
+    --shadow-blue: #085b7c;
+    --dark-green: rgb(48, 78, 58);
+    --light-green: rgb(150, 202, 167);
+    --dark-red: rgb(78, 25, 23);
+    --light-red: rgb(204, 124, 121);
+    --dark-gray: #505050;
+    --soft-gray: #b3b3b3;
+  }
+
+html {
+    font-size: 18px;
+    font-family: "Lato", sans-serif;
+}
+
+body {
+    margin: 0px;
+    background: var(--background-blue)
+}
+
+/*================================================================
+|
+|   HEADER
+|
+================================================================*/
+
+.header {
+    background-color: white;
+    padding: 5px 5px 5px 5px;
+    position: fixed;
+    width: 100%;
+    box-shadow: 3px 3px 3px var(--shadow-blue);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: top;
+    top: 0px;
+}
+
+.main {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
+    font-size: 14px;
+    background: transparent;
+    margin-top: 80px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.logo {
+    color: var(--logo-blue);
+    font-size: 24px;
+    padding: 5px;
+}
+
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+.item-bar {
+    display: flex;
+    align-items: center;
+    background: white;
+    text-align: center;
+    box-shadow: 3px 3px 3px var(--shadow-blue);
+    width: 100%;
+    margin: 10px;
+}
+
+input[type="text"]  {
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 18px;
+}
+
+.btn {
+    height: 50px;
+    width: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-btn {
+    background: var(--logo-blue);
+    color: var(--background-blue)
+}
+
+.add-btn:hover {
+    background: var(--background-blue);
+    color: var(--logo-blue)
+}
+
+.edit-btn {
+    color: var(--light-green)
+}
+
+.edit-btn:hover {
+    color: var(--dark-green)
+}
+
+.remove-btn {
+    color: var(--light-red)
+}
+
+.remove-btn:hover {
+    color: var(--dark-red)
+}
+
+.item {
+    width: 100%;
+    font-size: 18px;
+    text-align: left;
+    display: block;
+}
