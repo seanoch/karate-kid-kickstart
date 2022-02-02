@@ -7,6 +7,7 @@
     <link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="styles/style.css" rel="stylesheet">
+    <script src="scripts/todo_list.js"></script>
     <title>My Checklist</title>
 </head>
 <body>
@@ -14,23 +15,11 @@
         <label class="logo">My Checklist</label>
     </div>
 
-    <div class="main">
-        <div class="item-bar">
-            <input type="text" placeholder="To-do Item"></input>
-            <div class="btn add-btn">
+    <div class="main" id="main-container">
+        <div class="bar">
+            <input type="text" id="new-item-name" placeholder="To-do Item"></input>
+            <div class="btn" id="add-btn">
                 <span class="material-icons md-36">&#xe145;</span> 
-            </div>
-        </div>
-
-
-        <div class="item-bar">
-            <input type="checkbox"></input>
-            <label class="item">Item 1 </label>
-            <div class="btn edit-btn">
-                <span class="material-icons md-36">&#xe3c9;</span> 
-            </div>
-            <div class="btn remove-btn">
-                <span class="material-icons md-36">&#xe14c;</span> 
             </div>
         </div>
     </div>
