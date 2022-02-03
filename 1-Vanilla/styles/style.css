@@ -25,7 +25,7 @@ body {
 
 .header {
     background-color: white;
-    padding: 5px 5px 5px 5px;
+    padding: 5px;
     position: fixed;
     width: 100%;
     box-shadow: 3px 3px 3px var(--shadow-blue);
