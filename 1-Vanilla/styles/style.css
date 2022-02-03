@@ -7,8 +7,10 @@
     --light-green: rgb(150, 202, 167);
     --dark-red: rgb(78, 25, 23);
     --light-red: rgb(204, 124, 121);
+    --dark-yellow: rgb(104, 89, 2);
+    --light-yellow: rgb(194, 173, 53);
     --dark-gray: #505050;
-    --soft-gray: #b3b3b3;
+    --light-gray: #b3b3b3;
   }
 
 html {
@@ -42,15 +44,16 @@ body {
     align-items: center;
     font-size: 14px;
     background: transparent;
-    margin-top: 80px;
+    margin-top: 120px;
     margin-left: auto;
     margin-right: auto;
 }
 
 .logo {
     color: var(--logo-blue);
-    font-size: 24px;
     padding: 5px;
+    font-family: 'Comforter', cursive;
+    font-size: 42px;
 }
 
 .material-icons.md-18 { font-size: 18px; }
@@ -84,6 +87,8 @@ input[type="text"]  {
 
 input[type="text"].edit  {
     border: 1px solid black;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .btn {
@@ -107,12 +112,41 @@ input[type="text"].edit  {
 }
 
 .edit-btn {
-    color: var(--light-green)
+    color: var(--light-yellow)
 }
 
 .edit-btn:hover {
+    color: var(--dark-yellow);
+    background: var(--light-yellow);
+}
+
+.confirm-btn {
+    color: var(--light-green)
+}
+
+.confirm-btn:hover {
     color: var(--dark-green);
     background: var(--light-green);
+}
+
+.check-btn {
+    color: var(--light-gray);
+    background: var(--light-gray);
+}
+
+.check-btn:hover {
+    color: var(--dark-gray);
+    background: var(--dark-gray);
+}
+
+.check-btn.checked {
+    color: var(--dark-gray);
+    background: var(--light-gray);
+}
+
+.check-btn.checked:hover {
+    color: var(--light-gray);
+    background: var(--dark-gray);
 }
 
 .remove-btn {
@@ -127,6 +161,7 @@ input[type="text"].edit  {
 .item {
     width: 100%;
     font-size: 18px;
+    padding: 10px;
     text-align: left;
     display: block;
 }
