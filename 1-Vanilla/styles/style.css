@@ -62,6 +62,7 @@ body {
     background: white;
     text-align: center;
     box-shadow: 3px 3px 3px var(--shadow-blue);
+    border-radius: 10px;
     width: 100%;
     margin: 10px;
 }
@@ -98,7 +99,8 @@ input[type="text"].edit  {
 
 #add-btn {
     background: var(--logo-blue);
-    color: var(--background-blue)
+    color: var(--background-blue);
+    border-radius: 0px 10px 10px 0px;
 }
 
 #add-btn:hover {
@@ -127,6 +129,7 @@ input[type="text"].edit  {
 .check-btn {
     color: var(--light-gray);
     background: var(--light-gray);
+    border-radius: 10px 0px 0px 10px;
 }
 
 .check-btn:hover {
@@ -145,7 +148,8 @@ input[type="text"].edit  {
 }
 
 .remove-btn {
-    color: var(--light-red)
+    color: var(--light-red);
+    border-radius: 0px 10px 10px 0px;
 }
 
 .remove-btn:hover {
