@@ -47,7 +47,7 @@
     return newItemContainer;
   }
 
-  function addItem(event) {
+  function addItemCallback(event) {
     if (
       event.type === "click" ||
       (event.type === "keyup" && event.keyCode === 13)
@@ -55,10 +55,11 @@
       if (isVaildItemName(newItemInput.value)) {
         const newItem = createTodoItem(nextId, newItemInput.value);
 
-        nextId++;
-
         document.getElementById("main-container").appendChild(newItem);
+        localStorage.setItem(nextId, newItemInput.value);
+
         newItemInput.value = "";
+        nextId++;
       }
     }
   }
@@ -77,6 +78,7 @@
     return function () {
       const elementToRemove = document.getElementById("item-bar-" + id);
       document.getElementById("main-container").removeChild(elementToRemove);
+      localStorage.removeItem(id);
     };
   }
 
@@ -112,6 +114,8 @@
           newTextLabel.ondblclick = editItemCallback(id);
           bar.replaceChild(newTextLabel, input);
 
+          localStorage.setItem(id, input.value);
+
           const editBtn = createButton(id, "edit", editItemCallback(id));
           bar.replaceChild(editBtn, confirmBtn);
         }
@@ -144,6 +148,31 @@
     };
   }
 
-  addBtn.onclick = addItem;
-  newItemInput.onkeyup = addItem;
+  function loadLocalStorage() {
+    if (typeof Storage !== "undefined") {
+      let numericIds = [];
+
+      for (var i = 0; i < localStorage.length; i++) {
+        numericIds.push(parseInt(localStorage.key(i)));
+      }
+
+      numericIds.sort();
+
+      for (var i = 0; i < numericIds.length; i++) {
+        let id = numericIds[i];
+        let text = localStorage.getItem(id);
+        const newItem = createTodoItem(id, text);
+        document.getElementById("main-container").appendChild(newItem);
+      }
+
+      if (numericIds.length > 0) {
+        nextId = numericIds[numericIds.length - 1] + 1;
+      }
+    }
+  }
+
+  addBtn.onclick = addItemCallback;
+  newItemInput.onkeyup = addItemCallback;
+
+  loadLocalStorage();
 })();
