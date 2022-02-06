@@ -47,7 +47,7 @@
   function addItem() {
     let newItemInput = document.getElementById("new-item-name");
 
-    if (newItemInput.value.length > 0) {
+    if (isVaildItemName(newItemInput.value)) {
       let newItem = createTodoItem(nextId, newItemInput.value);
 
       nextId++;
@@ -55,6 +55,10 @@
       document.getElementById("main-container").appendChild(newItem);
       document.getElementById("new-item-name").value = "";
     }
+  }
+
+  function isVaildItemName(name) {
+      return name.length > 0;
   }
 
   function removeItemCallback(id) {
@@ -68,11 +72,11 @@
     return function () {
       let checkBtn = document.getElementById("check-btn-" + id);
 
-      if (checkBtn.classList.contains("checked")) {
-        console.log(checkBtn.classList);
+      if (checkBtn.dataset.checked == "yes") {
+        checkBtn.dataset.checked = "no";
         checkBtn.classList.remove("checked");
-        console.log(checkBtn.classList);
       } else {
+        checkBtn.dataset.checked = "yes";
         checkBtn.classList.add("checked");
       }
     };
@@ -84,14 +88,16 @@
       let input = document.getElementById("item-edit-" + id);
       let confirmBtn = document.getElementById("confirm-btn-" + id);
 
-      let newTextLabel = document.createElement("label");
-      newTextLabel.classList.add("item");
-      newTextLabel.id = "item-label-" + id;
-      newTextLabel.innerText = input.value;
-      bar.replaceChild(newTextLabel, input);
-
-      let editBtn = createButton(id, "edit", editItemCallback(id));
-      bar.replaceChild(editBtn, confirmBtn);
+      if (isVaildItemName(input.value)) {
+        let newTextLabel = document.createElement("label");
+        newTextLabel.classList.add("item");
+        newTextLabel.id = "item-label-" + id;
+        newTextLabel.innerText = input.value;
+        bar.replaceChild(newTextLabel, input);
+  
+        let editBtn = createButton(id, "edit", editItemCallback(id));
+        bar.replaceChild(editBtn, confirmBtn);
+      }
     };
   }
 
