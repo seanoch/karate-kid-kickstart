@@ -107,12 +107,12 @@ input[type="text"].edit  {
 }
 
 .edit-btn {
-    color: var(--light-yellow)
+    color: var(--light-green)
 }
 
 .edit-btn:hover {
-    color: var(--dark-yellow);
-    background: var(--light-yellow);
+    color: var(--dark-green);
+    background: var(--light-green);
 }
 
 .confirm-btn {

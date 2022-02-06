@@ -2,39 +2,45 @@
 
   let nextId = 0;
   const iconMap = { "edit": "&#xe3c9", "remove": "&#xe14c;", "check": "&#xe876;"}
+  const newItemInput = document.getElementById("new-item-name");
 
   function createButton(id, type, cb) {
-    let button = document.createElement("div");
+    const button = document.createElement("div");
     const icon = iconMap[type] || "&#xe145;";
+
+    const iconSpan = document.createElement("span");
+    iconSpan.classList.add("material-icons");
+    iconSpan.classList.add("md-36");
+    iconSpan.innerHTML = icon;
 
     button.classList.add("btn");
     button.classList.add(type + "-btn");
     button.id = type + "-btn-" + id;
-    button.innerHTML = '<span class="material-icons md-36">' + icon + "</span>";
+    button.appendChild(iconSpan);
     button.onclick = cb;
 
     return button;
   }
 
   function createTodoItem(id, text) {
-    let newItemContainer = document.createElement("div");
+    const newItemContainer = document.createElement("div");
     newItemContainer.classList.add("bar");
     newItemContainer.classList.add("item-bar");
     newItemContainer.id = "item-bar-" + id;
 
-    let newItemCheckBtn = createButton(id, "check", checkItemCallback(id));
+    const newItemCheckBtn = createButton(id, "check", checkItemCallback(id));
     newItemContainer.appendChild(newItemCheckBtn);
 
-    let newItemLabel = document.createElement("label");
+    const newItemLabel = document.createElement("label");
     newItemLabel.classList.add("item");
     newItemLabel.id = "item-label-" + id;
     newItemLabel.innerText = text;
     newItemContainer.appendChild(newItemLabel);
 
-    let newItemEditBtn = createButton(id, "edit", editItemCallback(id));
+    const newItemEditBtn = createButton(id, "edit", editItemCallback(id));
     newItemContainer.appendChild(newItemEditBtn);
 
-    let newItemRemoveBtn = createButton(
+    const newItemRemoveBtn = createButton(
       id,
       "remove",
       removeItemCallback(id)
@@ -45,32 +51,36 @@
   }
 
   function addItem() {
-    let newItemInput = document.getElementById("new-item-name");
-
     if (isVaildItemName(newItemInput.value)) {
-      let newItem = createTodoItem(nextId, newItemInput.value);
+      const newItem = createTodoItem(nextId, newItemInput.value);
 
       nextId++;
 
       document.getElementById("main-container").appendChild(newItem);
-      document.getElementById("new-item-name").value = "";
+      newItemInput.value = "";
     }
   }
 
   function isVaildItemName(name) {
-      return name.length > 0;
+      let valid = name.length > 0;
+
+      if (!valid) {
+        alert("Invalid item name!");
+      }
+
+      return valid;
   }
 
   function removeItemCallback(id) {
     return function () {
-      let elementToRemove = document.getElementById("item-bar-" + id);
+      const elementToRemove = document.getElementById("item-bar-" + id);
       document.getElementById("main-container").removeChild(elementToRemove);
     };
   }
 
   function checkItemCallback(id) {
     return function () {
-      let checkBtn = document.getElementById("check-btn-" + id);
+      const checkBtn = document.getElementById("check-btn-" + id);
 
       if (checkBtn.dataset.checked == "yes") {
         checkBtn.dataset.checked = "no";
@@ -84,18 +94,18 @@
 
   function confirmItemEditCallback(id) {
     return function () {
-      let bar = document.getElementById("item-bar-" + id);
-      let input = document.getElementById("item-edit-" + id);
-      let confirmBtn = document.getElementById("confirm-btn-" + id);
+      const bar = document.getElementById("item-bar-" + id);
+      const input = document.getElementById("item-edit-" + id);
+      const confirmBtn = document.getElementById("confirm-btn-" + id);
 
       if (isVaildItemName(input.value)) {
-        let newTextLabel = document.createElement("label");
+        const newTextLabel = document.createElement("label");
         newTextLabel.classList.add("item");
         newTextLabel.id = "item-label-" + id;
         newTextLabel.innerText = input.value;
         bar.replaceChild(newTextLabel, input);
   
-        let editBtn = createButton(id, "edit", editItemCallback(id));
+        const editBtn = createButton(id, "edit", editItemCallback(id));
         bar.replaceChild(editBtn, confirmBtn);
       }
     };
@@ -103,19 +113,19 @@
 
   function editItemCallback(id) {
     return function () {
-      let bar = document.getElementById("item-bar-" + id);
-      let label = document.getElementById("item-label-" + id);
-      let editBtn = document.getElementById("edit-btn-" + id);
-      let oldText = label.innerText;
+      const bar = document.getElementById("item-bar-" + id);
+      const label = document.getElementById("item-label-" + id);
+      const editBtn = document.getElementById("edit-btn-" + id);
+      const oldText = label.innerText;
 
-      let newTextInput = document.createElement("input");
+      const newTextInput = document.createElement("input");
       newTextInput.type = "text";
       newTextInput.classList.add("edit");
       newTextInput.id = "item-edit-" + id;
       newTextInput.value = oldText;
       bar.replaceChild(newTextInput, label);
 
-      let confirmBtn = createButton(
+      const confirmBtn = createButton(
         id,
         "confirm",
         confirmItemEditCallback(id)
