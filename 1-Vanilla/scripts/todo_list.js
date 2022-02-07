@@ -22,7 +22,7 @@
     return button;
   }
 
-  function createTodoItem(id, text) {
+  function createTodoItem(id, text, check) {
     const newItemContainer = document.createElement("div");
     newItemContainer.classList.add("bar");
     newItemContainer.classList.add("item-bar");
@@ -30,6 +30,11 @@
 
     const newItemCheckBtn = createButton(id, "check", checkItemCallback(id));
     newItemContainer.appendChild(newItemCheckBtn);
+
+    if (check) {
+        newItemCheckBtn.dataset.checked = "true";
+        newItemCheckBtn.classList.add("checked");
+    }
 
     const newItemLabel = document.createElement("label");
     newItemLabel.classList.add("item");
@@ -53,10 +58,10 @@
       (event.type === "keyup" && event.keyCode === 13)
     ) {
       if (isVaildItemName(newItemInput.value)) {
-        const newItem = createTodoItem(nextId, newItemInput.value);
+        const newItem = createTodoItem(nextId, newItemInput.value, false);
 
         document.getElementById("main-container").appendChild(newItem);
-        localStorage.setItem(nextId, newItemInput.value);
+        saveToLocalStorage(nextId);
 
         newItemInput.value = "";
         nextId++;
@@ -77,8 +82,9 @@
   function removeItemCallback(id) {
     return function () {
       const elementToRemove = document.getElementById("item-bar-" + id);
+
       document.getElementById("main-container").removeChild(elementToRemove);
-      localStorage.removeItem(id);
+      removeFromLocalStorage(id);
     };
   }
 
@@ -86,13 +92,15 @@
     return function () {
       const checkBtn = document.getElementById("check-btn-" + id);
 
-      if (checkBtn.dataset.checked == "yes") {
-        checkBtn.dataset.checked = "no";
+      if (checkBtn.dataset.checked == "true") {
+        checkBtn.dataset.checked = "false";
         checkBtn.classList.remove("checked");
       } else {
-        checkBtn.dataset.checked = "yes";
+        checkBtn.dataset.checked = "true";
         checkBtn.classList.add("checked");
       }
+
+      saveToLocalStorage(id);
     };
   }
 
@@ -114,10 +122,10 @@
           newTextLabel.ondblclick = editItemCallback(id);
           bar.replaceChild(newTextLabel, input);
 
-          localStorage.setItem(id, input.value);
-
           const editBtn = createButton(id, "edit", editItemCallback(id));
           bar.replaceChild(editBtn, confirmBtn);
+
+          saveToLocalStorage(id);
         }
       }
     };
@@ -148,6 +156,20 @@
     };
   }
 
+  function saveToLocalStorage(id) {
+    const label = document.getElementById("item-label-" + id);
+    const checkBtn = document.getElementById("check-btn-" + id);
+    let isChecked = checkBtn.dataset.checked === "true";
+
+    let obj = { "text" : label.innerText, "check" : isChecked };
+
+    localStorage.setItem(id, JSON.stringify(obj));
+  }
+
+  function removeFromLocalStorage(id) {
+    localStorage.removeItem(id);
+  }
+
   function loadLocalStorage() {
     if (typeof Storage !== "undefined") {
       let numericIds = [];
@@ -160,8 +182,8 @@
 
       for (var i = 0; i < numericIds.length; i++) {
         let id = numericIds[i];
-        let text = localStorage.getItem(id);
-        const newItem = createTodoItem(id, text);
+        let obj = JSON.parse(localStorage.getItem(id));
+        const newItem = createTodoItem(id, obj.text, obj.check);
         document.getElementById("main-container").appendChild(newItem);
       }
 
