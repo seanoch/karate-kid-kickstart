@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
     mode: 'development',
@@ -8,8 +9,15 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.js',
+        filename: '[name].[contenthash].js',
         clean: true
+    },
+    devtool: 'inline-source-map',
+    devServer: {
+        static: './dist',
+        port: 5001,
+        open: true,
+        hot: true
     },
     //loaders
 
@@ -18,6 +26,13 @@ module.exports = {
         title: 'Bundled MyChecklist',
         filename: 'index.html',
         template: path.resolve(__dirname, 'index.html')
-    })]
-
+    }), new CopyPlugin({
+        patterns: [
+          { from: path.resolve(__dirname, 'styles/style.css'), 
+          to: 'styles/style.css' },
+          { from: path.resolve(__dirname, 'styles/md.css'), 
+          to: 'styles/md.css' }
+        ]
+      })
+    ]
 }
