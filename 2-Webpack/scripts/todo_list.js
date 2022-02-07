@@ -3,6 +3,7 @@
   const iconMap = { edit: "&#xe3c9", remove: "&#xe14c;", check: "&#xe876;" };
   const newItemInput = document.getElementById("new-item-name");
   const addBtn = document.getElementById("add-btn");
+  const LOCAL_STORAGE_KEY = "myChecklist";
 
   function createButton(id, type, cb) {
     const button = document.createElement("div");
@@ -32,8 +33,8 @@
     newItemContainer.appendChild(newItemCheckBtn);
 
     if (check) {
-        newItemCheckBtn.dataset.checked = "true";
-        newItemCheckBtn.classList.add("checked");
+      newItemCheckBtn.dataset.checked = "true";
+      newItemCheckBtn.classList.add("checked");
     }
 
     const newItemLabel = document.createElement("label");
@@ -157,38 +158,50 @@
   }
 
   function saveToLocalStorage(id) {
-    const label = document.getElementById("item-label-" + id);
-    const checkBtn = document.getElementById("check-btn-" + id);
-    let isChecked = checkBtn.dataset.checked === "true";
+    if (typeof Storage !== "undefined") {
+      const label = document.getElementById("item-label-" + id);
+      const checkBtn = document.getElementById("check-btn-" + id);
+      let isChecked = checkBtn.dataset.checked === "true";
+      let map = getMapFromLocalStorage();
 
-    let obj = { "text" : label.innerText, "check" : isChecked };
+      map.set(id, { text: label.innerText, check: isChecked });
 
-    localStorage.setItem(id, JSON.stringify(obj));
+      setMapToLocalStorage(map);
+    }
   }
 
   function removeFromLocalStorage(id) {
-    localStorage.removeItem(id);
+    if (typeof Storage !== "undefined") {
+      let map = getMapFromLocalStorage();
+
+      map.delete(id);
+      setMapToLocalStorage(map);
+    }
+  }
+
+  function setMapToLocalStorage(map) {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(Array.from(map.entries())));
+  }
+
+  function getMapFromLocalStorage() {
+    let jsonObject = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+    let map = jsonObject!=null ? new Map(jsonObject) : new Map();
+
+    return map;
   }
 
   function loadLocalStorage() {
     if (typeof Storage !== "undefined") {
       let numericIds = [];
+      let map = getMapFromLocalStorage();
 
-      for (var i = 0; i < localStorage.length; i++) {
-        numericIds.push(parseInt(localStorage.key(i)));
-      }
-
-      numericIds.sort();
-
-      for (var i = 0; i < numericIds.length; i++) {
-        let id = numericIds[i];
-        let obj = JSON.parse(localStorage.getItem(id));
-        const newItem = createTodoItem(id, obj.text, obj.check);
+      for (const [id, value] of map) {
+        const newItem = createTodoItem(id, value.text, value.check);
         document.getElementById("main-container").appendChild(newItem);
-      }
 
-      if (numericIds.length > 0) {
-        nextId = numericIds[numericIds.length - 1] + 1;
+        if (id >= nextId) {
+          nextId = id + 1;
+        }
       }
     }
   }
