@@ -33,6 +33,27 @@ const { v4: uuidv4 } = require("uuid");
     return button;
   }
 
+  function createItemLabel(id, text) {
+    const label = document.createElement("label");
+    label.classList.add("item");
+    label.dataset.type = TYPE_ITEM_LABEL;
+    label.innerText = text;
+    label.ondblclick = editItemCallback(id);
+
+    return label;
+  }
+
+  function createItemInput(id, text) {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.classList.add("edit");
+    input.dataset.type = TYPE_ITEM_INPUT;
+    input.value = text;
+    input.onkeyup = confirmItemEditCallback(id);
+
+    return input;
+  }
+
   function createTodoItem(id, text, check) {
     const newItemContainer = document.createElement("div");
     newItemContainer.classList.add("bar");
@@ -47,11 +68,7 @@ const { v4: uuidv4 } = require("uuid");
       newItemCheckBtn.classList.add("checked");
     }
 
-    const newItemLabel = document.createElement("label");
-    newItemLabel.classList.add("item");
-    newItemLabel.dataset.type = TYPE_ITEM_LABEL;
-    newItemLabel.innerText = text;
-    newItemLabel.ondblclick = editItemCallback(id);
+    const newItemLabel = createItemLabel(id, text);
     newItemContainer.appendChild(newItemLabel);
 
     const newItemEditBtn = createButton(TYPE_EDIT_BTN, editItemCallback(id));
@@ -146,11 +163,7 @@ const { v4: uuidv4 } = require("uuid");
         const removeBtn = getItemElement(id, TYPE_REMOVE_BTN);
 
         if (isVaildItemName(input.value)) {
-          const newTextLabel = document.createElement("label");
-          newTextLabel.classList.add("item");
-          newTextLabel.dataset.type = TYPE_ITEM_LABEL;
-          newTextLabel.innerText = input.value;
-          newTextLabel.ondblclick = editItemCallback(id);
+          const newTextLabel = createItemLabel(id, input.value);
           todoItem.replaceChild(newTextLabel, input);
 
           checkBtn.classList.remove("disabled");
@@ -174,12 +187,7 @@ const { v4: uuidv4 } = require("uuid");
       const removeBtn = getItemElement(id, TYPE_REMOVE_BTN);
       const oldText = label.innerText;
 
-      const newTextInput = document.createElement("input");
-      newTextInput.type = "text";
-      newTextInput.classList.add("edit");
-      newTextInput.dataset.type = TYPE_ITEM_INPUT;
-      newTextInput.value = oldText;
-      newTextInput.onkeyup = confirmItemEditCallback(id);
+      const newTextInput = createItemInput(id, oldText);
       todoItem.replaceChild(newTextInput, label);
       newTextInput.focus();
 
