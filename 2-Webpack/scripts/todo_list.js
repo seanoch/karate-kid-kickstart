@@ -82,29 +82,40 @@ const { v4: uuidv4 } = require("uuid");
     return valid;
   }
 
+  function isInEditMode(id) {
+    const todoItem = document.querySelector("[data-id='" + id + "']");
+    const input = todoItem.querySelector("[data-type='item-input']");
+
+    return input !== null;
+  }
+
   function removeItemCallback(id) {
     return function () {
-      const todoItem = document.querySelector("[data-id='" + id + "']");
+      if (!isInEditMode(id)) {
+        const todoItem = document.querySelector("[data-id='" + id + "']");
 
-      document.getElementById("main-container").removeChild(todoItem);
-      removeFromLocalStorage(id);
+        document.getElementById("main-container").removeChild(todoItem);
+        removeFromLocalStorage(id);
+      }
     };
   }
 
   function checkItemCallback(id) {
     return function () {
-      const todoItem = document.querySelector("[data-id='" + id + "']");
-      const checkBtn = todoItem.querySelector("[data-type='check']");
+      if (!isInEditMode(id)) {
+        const todoItem = document.querySelector("[data-id='" + id + "']");
+        const checkBtn = todoItem.querySelector("[data-type='check']");
 
-      if (checkBtn.dataset.checked == "true") {
-        checkBtn.dataset.checked = "false";
-        checkBtn.classList.remove("checked");
-      } else {
-        checkBtn.dataset.checked = "true";
-        checkBtn.classList.add("checked");
+        if (checkBtn.dataset.checked == "true") {
+          checkBtn.dataset.checked = "false";
+          checkBtn.classList.remove("checked");
+        } else {
+          checkBtn.dataset.checked = "true";
+          checkBtn.classList.add("checked");
+        }
+
+        saveToLocalStorage(id);
       }
-
-      saveToLocalStorage(id);
     };
   }
 
@@ -117,6 +128,8 @@ const { v4: uuidv4 } = require("uuid");
         const todoItem = document.querySelector("[data-id='" + id + "']");
         const input = todoItem.querySelector("[data-type='item-input']");
         const confirmBtn = todoItem.querySelector("[data-type='confirm']");
+        const checkBtn = todoItem.querySelector("[data-type='check']");
+        const removeBtn = todoItem.querySelector("[data-type='remove']");
 
         if (isVaildItemName(input.value)) {
           const newTextLabel = document.createElement("label");
@@ -125,6 +138,9 @@ const { v4: uuidv4 } = require("uuid");
           newTextLabel.innerText = input.value;
           newTextLabel.ondblclick = editItemCallback(id);
           todoItem.replaceChild(newTextLabel, input);
+
+          checkBtn.classList.remove("disabled");
+          removeBtn.classList.remove("disabled");
 
           const editBtn = createButton("edit", editItemCallback(id));
           todoItem.replaceChild(editBtn, confirmBtn);
@@ -140,6 +156,8 @@ const { v4: uuidv4 } = require("uuid");
       const todoItem = document.querySelector("[data-id='" + id + "']");
       const label = todoItem.querySelector("[data-type='item-label']");
       const editBtn = todoItem.querySelector("[data-type='edit']");
+      const checkBtn = todoItem.querySelector("[data-type='check']");
+      const removeBtn = todoItem.querySelector("[data-type='remove']");
       const oldText = label.innerText;
 
       const newTextInput = document.createElement("input");
@@ -150,6 +168,9 @@ const { v4: uuidv4 } = require("uuid");
       newTextInput.onkeyup = confirmItemEditCallback(id);
       todoItem.replaceChild(newTextInput, label);
       newTextInput.focus();
+
+      checkBtn.classList.add("disabled");
+      removeBtn.classList.add("disabled");
 
       const confirmBtn = createButton("confirm", confirmItemEditCallback(id));
       todoItem.replaceChild(confirmBtn, editBtn);
@@ -162,14 +183,11 @@ const { v4: uuidv4 } = require("uuid");
       const label = todoItem.querySelector("[data-type='item-label']");
       const checkBtn = todoItem.querySelector("[data-type='check']");
       let isChecked = checkBtn.dataset.checked === "true";
-      let isEditMode = label === null;
 
-      if (!isEditMode) {
-        localStorageManager.addOrUpdateItem(id, {
-          text: label.innerText,
-          check: isChecked,
-        });
-      }
+      localStorageManager.addOrUpdateItem(id, {
+        text: label.innerText,
+        check: isChecked,
+      });
     }
   }
 
