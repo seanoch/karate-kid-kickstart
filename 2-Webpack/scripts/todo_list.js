@@ -1,11 +1,12 @@
 (function () {
-  let nextId = 0;
+  const { v4: uuidv4 } = require("uuid");
+
   const iconMap = { edit: "&#xe3c9", remove: "&#xe14c;", check: "&#xe876;" };
   const newItemInput = document.getElementById("new-item-name");
   const addBtn = document.getElementById("add-btn");
   const LOCAL_STORAGE_KEY = "myChecklist";
 
-  function createButton(id, type, cb) {
+  function createButton(type, cb) {
     const button = document.createElement("div");
     const icon = iconMap[type] || "&#xe145;";
 
@@ -16,7 +17,7 @@
 
     button.classList.add("btn");
     button.classList.add(type + "-btn");
-    button.id = type + "-btn-" + id;
+    button.dataset.type = type;
     button.appendChild(iconSpan);
     button.onclick = cb;
 
@@ -27,9 +28,9 @@
     const newItemContainer = document.createElement("div");
     newItemContainer.classList.add("bar");
     newItemContainer.classList.add("item-bar");
-    newItemContainer.id = "item-bar-" + id;
+    newItemContainer.dataset.id = id;
 
-    const newItemCheckBtn = createButton(id, "check", checkItemCallback(id));
+    const newItemCheckBtn = createButton("check", checkItemCallback(id));
     newItemContainer.appendChild(newItemCheckBtn);
 
     if (check) {
@@ -39,15 +40,15 @@
 
     const newItemLabel = document.createElement("label");
     newItemLabel.classList.add("item");
-    newItemLabel.id = "item-label-" + id;
+    newItemLabel.dataset.type = "item-label";
     newItemLabel.innerText = text;
     newItemLabel.ondblclick = editItemCallback(id);
     newItemContainer.appendChild(newItemLabel);
 
-    const newItemEditBtn = createButton(id, "edit", editItemCallback(id));
+    const newItemEditBtn = createButton("edit", editItemCallback(id));
     newItemContainer.appendChild(newItemEditBtn);
 
-    const newItemRemoveBtn = createButton(id, "remove", removeItemCallback(id));
+    const newItemRemoveBtn = createButton("remove", removeItemCallback(id));
     newItemContainer.appendChild(newItemRemoveBtn);
 
     return newItemContainer;
@@ -59,13 +60,13 @@
       (event.type === "keyup" && event.keyCode === 13)
     ) {
       if (isVaildItemName(newItemInput.value)) {
-        const newItem = createTodoItem(nextId, newItemInput.value, false);
+        const uniqueId = uuidv4();
+        const newItem = createTodoItem(uniqueId, newItemInput.value, false);
 
         document.getElementById("main-container").appendChild(newItem);
-        saveToLocalStorage(nextId);
+        saveToLocalStorage(uniqueId);
 
         newItemInput.value = "";
-        nextId++;
       }
     }
   }
@@ -82,16 +83,17 @@
 
   function removeItemCallback(id) {
     return function () {
-      const elementToRemove = document.getElementById("item-bar-" + id);
+      const todoItem = document.querySelector("[data-id='"+id+"']");
 
-      document.getElementById("main-container").removeChild(elementToRemove);
+      document.getElementById("main-container").removeChild(todoItem);
       removeFromLocalStorage(id);
     };
   }
 
   function checkItemCallback(id) {
     return function () {
-      const checkBtn = document.getElementById("check-btn-" + id);
+      const todoItem = document.querySelector("[data-id='"+id+"']");
+      const checkBtn = todoItem.querySelector("[data-type='check']");
 
       if (checkBtn.dataset.checked == "true") {
         checkBtn.dataset.checked = "false";
@@ -111,20 +113,20 @@
         event.type === "click" ||
         (event.type === "keyup" && event.keyCode === 13)
       ) {
-        const bar = document.getElementById("item-bar-" + id);
-        const input = document.getElementById("item-edit-" + id);
-        const confirmBtn = document.getElementById("confirm-btn-" + id);
+        const todoItem = document.querySelector("[data-id='"+id+"']");
+        const input = todoItem.querySelector("[data-type='item-input']");
+        const confirmBtn = todoItem.querySelector("[data-type='confirm']");
 
         if (isVaildItemName(input.value)) {
           const newTextLabel = document.createElement("label");
           newTextLabel.classList.add("item");
-          newTextLabel.id = "item-label-" + id;
+          newTextLabel.dataset.type = "item-label";
           newTextLabel.innerText = input.value;
           newTextLabel.ondblclick = editItemCallback(id);
-          bar.replaceChild(newTextLabel, input);
+          todoItem.replaceChild(newTextLabel, input);
 
-          const editBtn = createButton(id, "edit", editItemCallback(id));
-          bar.replaceChild(editBtn, confirmBtn);
+          const editBtn = createButton("edit", editItemCallback(id));
+          todoItem.replaceChild(editBtn, confirmBtn);
 
           saveToLocalStorage(id);
         }
@@ -134,33 +136,30 @@
 
   function editItemCallback(id) {
     return function () {
-      const bar = document.getElementById("item-bar-" + id);
-      const label = document.getElementById("item-label-" + id);
-      const editBtn = document.getElementById("edit-btn-" + id);
+      const todoItem = document.querySelector("[data-id='"+id+"']");
+      const label = todoItem.querySelector("[data-type='item-label']");
+      const editBtn = todoItem.querySelector("[data-type='edit']");
       const oldText = label.innerText;
 
       const newTextInput = document.createElement("input");
       newTextInput.type = "text";
       newTextInput.classList.add("edit");
-      newTextInput.id = "item-edit-" + id;
+      newTextInput.dataset.type = "item-input";
       newTextInput.value = oldText;
       newTextInput.onkeyup = confirmItemEditCallback(id);
-      bar.replaceChild(newTextInput, label);
+      todoItem.replaceChild(newTextInput, label);
       newTextInput.focus();
 
-      const confirmBtn = createButton(
-        id,
-        "confirm",
-        confirmItemEditCallback(id)
-      );
-      bar.replaceChild(confirmBtn, editBtn);
+      const confirmBtn = createButton("confirm", confirmItemEditCallback(id));
+      todoItem.replaceChild(confirmBtn, editBtn);
     };
   }
 
   function saveToLocalStorage(id) {
     if (typeof Storage !== "undefined") {
-      const label = document.getElementById("item-label-" + id);
-      const checkBtn = document.getElementById("check-btn-" + id);
+      const todoItem = document.querySelector("[data-id='"+id+"']");
+      const label = todoItem.querySelector("[data-type='item-label']");
+      const checkBtn = todoItem.querySelector("[data-type='check']");
       let isChecked = checkBtn.dataset.checked === "true";
       let map = getMapFromLocalStorage();
 
@@ -198,10 +197,6 @@
       for (const [id, value] of map) {
         const newItem = createTodoItem(id, value.text, value.check);
         document.getElementById("main-container").appendChild(newItem);
-
-        if (id >= nextId) {
-          nextId = id + 1;
-        }
       }
     }
   }
