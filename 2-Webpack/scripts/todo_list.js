@@ -1,10 +1,11 @@
-(function () {
-  const { v4: uuidv4 } = require("uuid");
+import { LocalStorageManager } from "./localstorage_manager";
+const { v4: uuidv4 } = require("uuid");
 
+(function () {
   const iconMap = { edit: "&#xe3c9", remove: "&#xe14c;", check: "&#xe876;" };
   const newItemInput = document.getElementById("new-item-name");
   const addBtn = document.getElementById("add-btn");
-  const LOCAL_STORAGE_KEY = "myChecklist";
+  let localStorageManager = new LocalStorageManager();
 
   function createButton(type, cb) {
     const button = document.createElement("div");
@@ -83,7 +84,7 @@
 
   function removeItemCallback(id) {
     return function () {
-      const todoItem = document.querySelector("[data-id='"+id+"']");
+      const todoItem = document.querySelector("[data-id='" + id + "']");
 
       document.getElementById("main-container").removeChild(todoItem);
       removeFromLocalStorage(id);
@@ -92,7 +93,7 @@
 
   function checkItemCallback(id) {
     return function () {
-      const todoItem = document.querySelector("[data-id='"+id+"']");
+      const todoItem = document.querySelector("[data-id='" + id + "']");
       const checkBtn = todoItem.querySelector("[data-type='check']");
 
       if (checkBtn.dataset.checked == "true") {
@@ -113,7 +114,7 @@
         event.type === "click" ||
         (event.type === "keyup" && event.keyCode === 13)
       ) {
-        const todoItem = document.querySelector("[data-id='"+id+"']");
+        const todoItem = document.querySelector("[data-id='" + id + "']");
         const input = todoItem.querySelector("[data-type='item-input']");
         const confirmBtn = todoItem.querySelector("[data-type='confirm']");
 
@@ -136,7 +137,7 @@
 
   function editItemCallback(id) {
     return function () {
-      const todoItem = document.querySelector("[data-id='"+id+"']");
+      const todoItem = document.querySelector("[data-id='" + id + "']");
       const label = todoItem.querySelector("[data-type='item-label']");
       const editBtn = todoItem.querySelector("[data-type='edit']");
       const oldText = label.innerText;
@@ -156,43 +157,32 @@
   }
 
   function saveToLocalStorage(id) {
-    if (typeof Storage !== "undefined") {
-      const todoItem = document.querySelector("[data-id='"+id+"']");
+    if (localStorageManager.canUseLocalStorage()) {
+      const todoItem = document.querySelector("[data-id='" + id + "']");
       const label = todoItem.querySelector("[data-type='item-label']");
       const checkBtn = todoItem.querySelector("[data-type='check']");
       let isChecked = checkBtn.dataset.checked === "true";
-      let map = getMapFromLocalStorage();
+      let isEditMode = label === null;
 
-      map.set(id, { text: label.innerText, check: isChecked });
-
-      setMapToLocalStorage(map);
+      if (!isEditMode) {
+        localStorageManager.addOrUpdateItem(id, {
+          text: label.innerText,
+          check: isChecked,
+        });
+      }
     }
   }
 
   function removeFromLocalStorage(id) {
-    if (typeof Storage !== "undefined") {
-      let map = getMapFromLocalStorage();
-
-      map.delete(id);
-      setMapToLocalStorage(map);
+    if (localStorageManager.canUseLocalStorage()) {
+      localStorageManager.removeItem(id);
     }
   }
 
-  function setMapToLocalStorage(map) {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(Array.from(map.entries())));
-  }
-
-  function getMapFromLocalStorage() {
-    let jsonObject = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-    let map = jsonObject!=null ? new Map(jsonObject) : new Map();
-
-    return map;
-  }
-
   function loadLocalStorage() {
-    if (typeof Storage !== "undefined") {
+    if (localStorageManager.canUseLocalStorage()) {
       let numericIds = [];
-      let map = getMapFromLocalStorage();
+      let map = localStorageManager.getItems();
 
       for (const [id, value] of map) {
         const newItem = createTodoItem(id, value.text, value.check);
