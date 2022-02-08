@@ -28,10 +28,8 @@ module.exports = {
         template: path.resolve(__dirname, 'index.html')
     }), new CopyPlugin({
         patterns: [
-          { from: path.resolve(__dirname, 'styles/style.css'), 
-          to: 'styles/style.css' },
-          { from: path.resolve(__dirname, 'styles/md.css'), 
-          to: 'styles/md.css' }
+          { from: path.resolve(__dirname, 'styles/*.css'), 
+          to: 'styles/[name].css' }
         ]
       })
     ]
