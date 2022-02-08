@@ -2,9 +2,17 @@ import { LocalStorageManager } from "./localstorage_manager";
 const { v4: uuidv4 } = require("uuid");
 
 (function () {
+  const TYPE_ITEM_INPUT = "item-input";
+  const TYPE_ITEM_LABEL = "item-label"; 
+  const TYPE_EDIT_BTN = "edit";
+  const TYPE_REMOVE_BTN = "remove";
+  const TYPE_CHECK_BTN = "check";
+  const TYPE_CONFIRM_BTN = "confirm";
+
   const iconMap = { edit: "&#xe3c9", remove: "&#xe14c;", check: "&#xe876;" };
   const newItemInput = document.getElementById("new-item-name");
   const addBtn = document.getElementById("add-btn");
+
   let localStorageManager = new LocalStorageManager();
 
   function createButton(type, cb) {
@@ -31,7 +39,7 @@ const { v4: uuidv4 } = require("uuid");
     newItemContainer.classList.add("item-bar");
     newItemContainer.dataset.id = id;
 
-    const newItemCheckBtn = createButton("check", checkItemCallback(id));
+    const newItemCheckBtn = createButton(TYPE_CHECK_BTN, checkItemCallback(id));
     newItemContainer.appendChild(newItemCheckBtn);
 
     if (check) {
@@ -41,15 +49,15 @@ const { v4: uuidv4 } = require("uuid");
 
     const newItemLabel = document.createElement("label");
     newItemLabel.classList.add("item");
-    newItemLabel.dataset.type = "item-label";
+    newItemLabel.dataset.type = TYPE_ITEM_LABEL;
     newItemLabel.innerText = text;
     newItemLabel.ondblclick = editItemCallback(id);
     newItemContainer.appendChild(newItemLabel);
 
-    const newItemEditBtn = createButton("edit", editItemCallback(id));
+    const newItemEditBtn = createButton(TYPE_EDIT_BTN, editItemCallback(id));
     newItemContainer.appendChild(newItemEditBtn);
 
-    const newItemRemoveBtn = createButton("remove", removeItemCallback(id));
+    const newItemRemoveBtn = createButton(TYPE_REMOVE_BTN, removeItemCallback(id));
     newItemContainer.appendChild(newItemRemoveBtn);
 
     return newItemContainer;
@@ -82,17 +90,24 @@ const { v4: uuidv4 } = require("uuid");
     return valid;
   }
 
-  function isInEditMode(id) {
-    const todoItem = document.querySelector("[data-id='" + id + "']");
-    const input = todoItem.querySelector("[data-type='item-input']");
+  function getItemElement(id, type) {
+    let element = document.querySelector("[data-id='" + id + "']");
 
-    return input !== null;
+    if (type !== undefined) {
+      element = element.querySelector("[data-type='" + type + "']");
+    }
+
+    return element;
+  }
+
+  function isInEditMode(id) {
+    return getItemElement(id, TYPE_ITEM_INPUT) !== null;
   }
 
   function removeItemCallback(id) {
     return function () {
       if (!isInEditMode(id)) {
-        const todoItem = document.querySelector("[data-id='" + id + "']");
+        const todoItem = getItemElement(id);
 
         document.getElementById("main-container").removeChild(todoItem);
         removeFromLocalStorage(id);
@@ -103,8 +118,7 @@ const { v4: uuidv4 } = require("uuid");
   function checkItemCallback(id) {
     return function () {
       if (!isInEditMode(id)) {
-        const todoItem = document.querySelector("[data-id='" + id + "']");
-        const checkBtn = todoItem.querySelector("[data-type='check']");
+        const checkBtn = getItemElement(id, TYPE_CHECK_BTN);
 
         if (checkBtn.dataset.checked == "true") {
           checkBtn.dataset.checked = "false";
@@ -125,16 +139,16 @@ const { v4: uuidv4 } = require("uuid");
         event.type === "click" ||
         (event.type === "keyup" && event.keyCode === 13)
       ) {
-        const todoItem = document.querySelector("[data-id='" + id + "']");
-        const input = todoItem.querySelector("[data-type='item-input']");
-        const confirmBtn = todoItem.querySelector("[data-type='confirm']");
-        const checkBtn = todoItem.querySelector("[data-type='check']");
-        const removeBtn = todoItem.querySelector("[data-type='remove']");
+        const todoItem = getItemElement(id);
+        const input = getItemElement(id, TYPE_ITEM_INPUT);
+        const confirmBtn = getItemElement(id, TYPE_CONFIRM_BTN);
+        const checkBtn = getItemElement(id, TYPE_CHECK_BTN);
+        const removeBtn = getItemElement(id, TYPE_REMOVE_BTN);
 
         if (isVaildItemName(input.value)) {
           const newTextLabel = document.createElement("label");
           newTextLabel.classList.add("item");
-          newTextLabel.dataset.type = "item-label";
+          newTextLabel.dataset.type = TYPE_ITEM_LABEL;
           newTextLabel.innerText = input.value;
           newTextLabel.ondblclick = editItemCallback(id);
           todoItem.replaceChild(newTextLabel, input);
@@ -142,7 +156,7 @@ const { v4: uuidv4 } = require("uuid");
           checkBtn.classList.remove("disabled");
           removeBtn.classList.remove("disabled");
 
-          const editBtn = createButton("edit", editItemCallback(id));
+          const editBtn = createButton(TYPE_EDIT_BTN, editItemCallback(id));
           todoItem.replaceChild(editBtn, confirmBtn);
 
           saveToLocalStorage(id);
@@ -153,17 +167,17 @@ const { v4: uuidv4 } = require("uuid");
 
   function editItemCallback(id) {
     return function () {
-      const todoItem = document.querySelector("[data-id='" + id + "']");
-      const label = todoItem.querySelector("[data-type='item-label']");
-      const editBtn = todoItem.querySelector("[data-type='edit']");
-      const checkBtn = todoItem.querySelector("[data-type='check']");
-      const removeBtn = todoItem.querySelector("[data-type='remove']");
+      const todoItem = getItemElement(id);
+      const label = getItemElement(id, TYPE_ITEM_LABEL);
+      const editBtn = getItemElement(id, TYPE_EDIT_BTN);
+      const checkBtn = getItemElement(id, TYPE_CHECK_BTN);
+      const removeBtn = getItemElement(id, TYPE_REMOVE_BTN);
       const oldText = label.innerText;
 
       const newTextInput = document.createElement("input");
       newTextInput.type = "text";
       newTextInput.classList.add("edit");
-      newTextInput.dataset.type = "item-input";
+      newTextInput.dataset.type = TYPE_ITEM_INPUT;
       newTextInput.value = oldText;
       newTextInput.onkeyup = confirmItemEditCallback(id);
       todoItem.replaceChild(newTextInput, label);
@@ -172,16 +186,15 @@ const { v4: uuidv4 } = require("uuid");
       checkBtn.classList.add("disabled");
       removeBtn.classList.add("disabled");
 
-      const confirmBtn = createButton("confirm", confirmItemEditCallback(id));
+      const confirmBtn = createButton(TYPE_CONFIRM_BTN, confirmItemEditCallback(id));
       todoItem.replaceChild(confirmBtn, editBtn);
     };
   }
 
   function saveToLocalStorage(id) {
     if (localStorageManager.canUseLocalStorage()) {
-      const todoItem = document.querySelector("[data-id='" + id + "']");
-      const label = todoItem.querySelector("[data-type='item-label']");
-      const checkBtn = todoItem.querySelector("[data-type='check']");
+      const label = getItemElement(id, TYPE_ITEM_LABEL);
+      const checkBtn = getItemElement(id, TYPE_CHECK_BTN);
       let isChecked = checkBtn.dataset.checked === "true";
 
       localStorageManager.addOrUpdateItem(id, {
