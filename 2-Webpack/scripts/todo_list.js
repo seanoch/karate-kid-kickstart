@@ -1,4 +1,4 @@
-import { LocalStorageManager } from "./localstorage_manager";
+import { addOrUpdateItem, removeItem, getItems, canUseLocalStorage } from "./localstorage_manager";
 import { v4  as uuidv4 } from "uuid";
 
 (function () {
@@ -14,8 +14,6 @@ import { v4  as uuidv4 } from "uuid";
   const iconMap = { edit: "&#xe3c9", remove: "&#xe14c;", check: "&#xe876;" };
   const newItemInput = document.getElementById("new-item-name");
   const addBtn = document.getElementById("add-btn");
-
-  const localStorageManager = new LocalStorageManager();
 
   function createButton(type, cb) {
     const button = document.createElement("div");
@@ -208,12 +206,12 @@ import { v4  as uuidv4 } from "uuid";
   }
 
   function saveToLocalStorage(id) {
-    if (localStorageManager.canUseLocalStorage()) {
+    if (canUseLocalStorage()) {
       const label = getItemElement(id, TYPE_ITEM_LABEL);
       const checkBtn = getItemElement(id, TYPE_CHECK_BTN);
       let isChecked = checkBtn.dataset.checked === "true";
 
-      localStorageManager.addOrUpdateItem(id, {
+      addOrUpdateItem(id, {
         text: label.innerText,
         check: isChecked,
       });
@@ -221,15 +219,15 @@ import { v4  as uuidv4 } from "uuid";
   }
 
   function removeFromLocalStorage(id) {
-    if (localStorageManager.canUseLocalStorage()) {
-      localStorageManager.removeItem(id);
+    if (canUseLocalStorage()) {
+      removeItem(id);
     }
   }
 
   function loadLocalStorage() {
-    if (localStorageManager.canUseLocalStorage()) {
+    if (canUseLocalStorage()) {
       let numericIds = [];
-      let map = localStorageManager.getItems();
+      let map = getItems();
 
       for (const [id, value] of map) {
         const newItem = createTodoItem(id, value.text, value.check);
