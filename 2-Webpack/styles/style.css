@@ -146,7 +146,7 @@ input[type="text"].edit  {
     background: var(--light-gray);
 }
 
-.check-btn.checked:hover {
+.check-btn.checked:not(.disabled):hover {
     color: var(--light-gray);
     background: var(--dark-gray);
 }

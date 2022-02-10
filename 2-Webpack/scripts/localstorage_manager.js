@@ -8,14 +8,14 @@ export class LocalStorageManager {
     this.LOCAL_STORAGE_KEY = "myChecklist";
   }
 
-  #setMapToLocalStorage(map) {
+  _setMapToLocalStorage(map) {
     localStorage.setItem(
       this.LOCAL_STORAGE_KEY,
       JSON.stringify(Array.from(map.entries()))
     );
   }
 
-  #getMapFromLocalStorage() {
+  _getMapFromLocalStorage() {
     let jsonObject = JSON.parse(localStorage.getItem(this.LOCAL_STORAGE_KEY));
     let map = jsonObject != null ? new Map(jsonObject) : new Map();
 
@@ -23,19 +23,19 @@ export class LocalStorageManager {
   }
 
   addOrUpdateItem(id, item) {
-    let map = this.#getMapFromLocalStorage();
+    let map = this._getMapFromLocalStorage();
     map.set(id, item);
-    this.#setMapToLocalStorage(map);
+    this._setMapToLocalStorage(map);
   }
 
   removeItem(id) {
-    let map = this.#getMapFromLocalStorage();
+    let map = this._getMapFromLocalStorage();
     map.delete(id);
-    this.#setMapToLocalStorage(map);
+    this._setMapToLocalStorage(map);
   }
 
   getItems() {
-    return this.#getMapFromLocalStorage();
+    return this._getMapFromLocalStorage();
   }
 
   canUseLocalStorage() {

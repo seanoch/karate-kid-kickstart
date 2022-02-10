@@ -12,7 +12,7 @@ module.exports = {
         filename: '[name].[contenthash].js',
         clean: true
     },
-    devtool: 'inline-source-map',
+    devtool: 'eval-source-map',
     devServer: {
         static: './dist',
         port: 5001,

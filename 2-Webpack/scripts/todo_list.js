@@ -1,34 +1,34 @@
 import { LocalStorageManager } from "./localstorage_manager";
-const { v4: uuidv4 } = require("uuid");
+import { v4  as uuidv4 } from "uuid";
 
 (function () {
   const TYPE_ITEM_INPUT = "item-input";
-  const TYPE_ITEM_LABEL = "item-label"; 
+  const TYPE_ITEM_LABEL = "item-label";
   const TYPE_EDIT_BTN = "edit";
   const TYPE_REMOVE_BTN = "remove";
   const TYPE_CHECK_BTN = "check";
   const TYPE_CONFIRM_BTN = "confirm";
 
+  const KEY_CODE_ENTER = 13;
+
   const iconMap = { edit: "&#xe3c9", remove: "&#xe14c;", check: "&#xe876;" };
   const newItemInput = document.getElementById("new-item-name");
   const addBtn = document.getElementById("add-btn");
 
-  let localStorageManager = new LocalStorageManager();
+  const localStorageManager = new LocalStorageManager();
 
   function createButton(type, cb) {
     const button = document.createElement("div");
     const icon = iconMap[type] || "&#xe145;";
 
     const iconSpan = document.createElement("span");
-    iconSpan.classList.add("material-icons");
-    iconSpan.classList.add("md-36");
+    iconSpan.classList.add("material-icons", "md-36");
     iconSpan.innerHTML = icon;
 
-    button.classList.add("btn");
-    button.classList.add(type + "-btn");
+    button.classList.add("btn", type + "-btn");
     button.dataset.type = type;
     button.appendChild(iconSpan);
-    button.onclick = cb;
+    button.addEventListener("click", cb);
 
     return button;
   }
@@ -38,7 +38,7 @@ const { v4: uuidv4 } = require("uuid");
     label.classList.add("item");
     label.dataset.type = TYPE_ITEM_LABEL;
     label.innerText = text;
-    label.ondblclick = editItemCallback(id);
+    label.addEventListener("dblclick", editItemCallback(id));
 
     return label;
   }
@@ -49,15 +49,14 @@ const { v4: uuidv4 } = require("uuid");
     input.classList.add("edit");
     input.dataset.type = TYPE_ITEM_INPUT;
     input.value = text;
-    input.onkeyup = confirmItemEditCallback(id);
+    input.addEventListener("keyup", confirmItemEditCallback(id));
 
     return input;
   }
 
   function createTodoItem(id, text, check) {
     const newItemContainer = document.createElement("div");
-    newItemContainer.classList.add("bar");
-    newItemContainer.classList.add("item-bar");
+    newItemContainer.classList.add("bar", "item-bar");
     newItemContainer.dataset.id = id;
 
     const newItemCheckBtn = createButton(TYPE_CHECK_BTN, checkItemCallback(id));
@@ -67,6 +66,9 @@ const { v4: uuidv4 } = require("uuid");
       newItemCheckBtn.dataset.checked = "true";
       newItemCheckBtn.classList.add("checked");
     }
+    else {
+      newItemCheckBtn.dataset.checked = "false";
+    }
 
     const newItemLabel = createItemLabel(id, text);
     newItemContainer.appendChild(newItemLabel);
@@ -74,7 +76,10 @@ const { v4: uuidv4 } = require("uuid");
     const newItemEditBtn = createButton(TYPE_EDIT_BTN, editItemCallback(id));
     newItemContainer.appendChild(newItemEditBtn);
 
-    const newItemRemoveBtn = createButton(TYPE_REMOVE_BTN, removeItemCallback(id));
+    const newItemRemoveBtn = createButton(
+      TYPE_REMOVE_BTN,
+      removeItemCallback(id)
+    );
     newItemContainer.appendChild(newItemRemoveBtn);
 
     return newItemContainer;
@@ -83,7 +88,7 @@ const { v4: uuidv4 } = require("uuid");
   function addItemCallback(event) {
     if (
       event.type === "click" ||
-      (event.type === "keyup" && event.keyCode === 13)
+      (event.type === "keyup" && event.keyCode === KEY_CODE_ENTER)
     ) {
       if (isVaildItemName(newItemInput.value)) {
         const uniqueId = uuidv4();
@@ -110,7 +115,7 @@ const { v4: uuidv4 } = require("uuid");
   function getItemElement(id, type) {
     let element = document.querySelector("[data-id='" + id + "']");
 
-    if (type !== undefined) {
+    if (type) {
       element = element.querySelector("[data-type='" + type + "']");
     }
 
@@ -154,7 +159,7 @@ const { v4: uuidv4 } = require("uuid");
     return function (event) {
       if (
         event.type === "click" ||
-        (event.type === "keyup" && event.keyCode === 13)
+        (event.type === "keyup" && event.keyCode === KEY_CODE_ENTER)
       ) {
         const todoItem = getItemElement(id);
         const input = getItemElement(id, TYPE_ITEM_INPUT);
@@ -194,7 +199,10 @@ const { v4: uuidv4 } = require("uuid");
       checkBtn.classList.add("disabled");
       removeBtn.classList.add("disabled");
 
-      const confirmBtn = createButton(TYPE_CONFIRM_BTN, confirmItemEditCallback(id));
+      const confirmBtn = createButton(
+        TYPE_CONFIRM_BTN,
+        confirmItemEditCallback(id)
+      );
       todoItem.replaceChild(confirmBtn, editBtn);
     };
   }
@@ -230,8 +238,8 @@ const { v4: uuidv4 } = require("uuid");
     }
   }
 
-  addBtn.onclick = addItemCallback;
-  newItemInput.onkeyup = addItemCallback;
+  addBtn.addEventListener("click", addItemCallback);
+  newItemInput.addEventListener("keyup", addItemCallback);
 
   loadLocalStorage();
 })();
