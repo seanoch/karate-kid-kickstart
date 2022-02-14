@@ -31,5 +31,5 @@ app.delete('/:id', (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`My Checklist server listening on port ${port}`)
 })

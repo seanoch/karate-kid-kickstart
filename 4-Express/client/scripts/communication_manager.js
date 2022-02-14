@@ -6,7 +6,6 @@ function addOrUpdateItem(id, item) {
 
   axios.post(urlWithId, item).then(
     (response) => {
-      console.log(response);
     },
     (error) => {
       console.log(error);
@@ -19,7 +18,6 @@ function removeItem(id) {
 
   axios.delete(urlWithId, { params: { id: id } }).then(
     (response) => {
-      console.log(response);
     },
     (error) => {
       console.log(error);
