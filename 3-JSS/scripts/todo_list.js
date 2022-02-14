@@ -1,5 +1,5 @@
-import { addOrUpdateItem, removeItem, getItems, canUseLocalStorage } from "./localstorage_manager";
-import { v4  as uuidv4 } from "uuid";
+import { addOrUpdateItem, removeItem, getItems } from "./localstorage_manager";
+import { v4 as uuidv4 } from "uuid";
 import { classes } from "./style_jss";
 
 (function () {
@@ -64,8 +64,7 @@ import { classes } from "./style_jss";
     if (check) {
       newItemCheckBtn.dataset.checked = "true";
       newItemCheckBtn.classList.add("checked");
-    }
-    else {
+    } else {
       newItemCheckBtn.dataset.checked = "false";
     }
 
@@ -207,33 +206,26 @@ import { classes } from "./style_jss";
   }
 
   function saveToLocalStorage(id) {
-    if (canUseLocalStorage()) {
-      const label = getItemElement(id, TYPE_ITEM_LABEL);
-      const checkBtn = getItemElement(id, TYPE_CHECK_BTN);
-      let isChecked = checkBtn.dataset.checked === "true";
+    const label = getItemElement(id, TYPE_ITEM_LABEL);
+    const checkBtn = getItemElement(id, TYPE_CHECK_BTN);
+    let isChecked = checkBtn.dataset.checked === "true";
 
-      addOrUpdateItem(id, {
-        text: label.innerText,
-        check: isChecked,
-      });
-    }
+    addOrUpdateItem(id, {
+      text: label.innerText,
+      check: isChecked,
+    });
   }
 
   function removeFromLocalStorage(id) {
-    if (canUseLocalStorage()) {
-      removeItem(id);
-    }
+    removeItem(id);
   }
 
   function loadLocalStorage() {
-    if (canUseLocalStorage()) {
-      let numericIds = [];
-      let map = getItems();
+    let items = getItems();
 
-      for (const [id, value] of map) {
-        const newItem = createTodoItem(id, value.text, value.check);
-        document.getElementById("main-container").appendChild(newItem);
-      }
+    for (const key in items) {
+      const newItem = createTodoItem(key, items[key]["text"], items[key]["check"]);
+      document.getElementById("main-container").appendChild(newItem);
     }
   }
 

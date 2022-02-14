@@ -1,22 +1,6 @@
-import jss from 'jss'
-import preset from 'jss-preset-default'
-import Color from 'color'
+import { jss } from './preset_jss'
+import { darkGreen, lightGreen, darkRed, lightRed, darkGray, lightGray } from './preset_jss'
 
-const logoBlue = '#0b79a5';
-const backgroundBlue = '#e5f6fd';
-const hoverBlue = '#d7f2fd';
-const shadowBlue = '#085b7c';
-const darkGreen = 'rgb(48, 78, 58)';
-const lightGreen = 'rgb(150, 202, 167)';
-const darkRed = 'rgb(78, 25, 23)';
-const lightRed = 'rgb(204, 124, 121)';
-const darkYellow = 'rgb(104, 89, 2)';
-const lightYellow = 'rgb(194, 173, 53)';
-const darkGray = '#505050';
-const lightGray = '#b3b3b3';
-
-// One time setup with default plugins and settings.
-jss.setup(preset())
 
 const styles = {
   editBtn : {
