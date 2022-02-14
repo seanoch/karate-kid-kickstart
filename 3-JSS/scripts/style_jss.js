@@ -1,49 +1,48 @@
 import { jss } from './preset_jss'
-import { darkGreen, lightGreen, darkRed, lightRed, darkGray, lightGray } from './preset_jss'
-
+import { colors } from './colors_jss'
 
 const styles = {
   editBtn : {
-    color: lightGreen,
+    color: colors.lightGreen,
     '&:hover': {
-      color: darkGreen,
-      background: lightGreen
+      color: colors.darkGreen,
+      background: colors.lightGreen
     }
   },
   confirmBtn : {
-    color: lightGreen,
+    color: colors.lightGreen,
     '&:hover': {
-      color: darkGreen,
-      background: lightGreen
+      color: colors.darkGreen,
+      background: colors.lightGreen
     }
   },
   removeBtn : {
-    color: lightRed,
+    color: colors.lightRed,
     borderRadius: '0px 10px 10px 0px',
     '&:not(.disabled)': {
       '&:hover' :{
-        color: darkRed,
-        background: lightRed
+        color: colors.darkRed,
+        background: colors.lightRed
       }
     }
   },
   checkBtn: {
-    color: lightGray,
-    background: lightGray,
+    color: colors.lightGray,
+    background: colors.lightGray,
     borderRadius: '10px 0px 0px 10px',
     '&:not(.disabled)': {
       '&:hover' :{
-        color: darkGray,
-        background: darkGray
+        color: colors.darkGray,
+        background: colors.darkGray
       }
     },
     '&.checked' : {
-      color: darkGray,
-      background: lightGray,
+      color: colors.darkGray,
+      background: colors.lightGray,
       '&:not(.disabled)': {
         '&:hover' :{
-          color: lightGray,
-          background: darkGray
+          color: colors.lightGray,
+          background: colors.darkGray
         }
       }
     }
