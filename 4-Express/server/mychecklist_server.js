@@ -14,7 +14,7 @@ app.use(
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send(items);
+  res.sendJson(items);
 })
 
 app.post('/:id', (req, res) => {
@@ -22,12 +22,12 @@ app.post('/:id', (req, res) => {
     text:  req.body.text,
     check: req.body.check
   };
-  res.send(items);
+  res.sendStatus(200);
 })
 
 app.delete('/:id', (req, res) => {
   delete items[req.params.id]
-  res.send(items);
+  res.sendStatus(200);
 })
 
 app.listen(port, () => {
