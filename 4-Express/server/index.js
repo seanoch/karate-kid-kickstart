@@ -1,5 +1,7 @@
 const express = require('express')
 const cors = require('cors')
+const todo_service = require('./todo_service')
+
 const app = express()
 const port = 3000
 
@@ -13,22 +15,13 @@ app.use(
 );
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.sendJson(items);
-})
+app.get('/todos', todo_service.getItems);
 
-app.post('/:id', (req, res) => {
-  items[req.params.id] = {
-    text:  req.body.text,
-    check: req.body.check
-  };
-  res.sendStatus(200);
-})
+app.post('/todos', todo_service.createItem);
 
-app.delete('/:id', (req, res) => {
-  delete items[req.params.id]
-  res.sendStatus(200);
-})
+app.put('/todos/:id', todo_service.editItem);
+
+app.delete('/todos/:id', todo_service.deleteItem);
 
 app.listen(port, () => {
   console.log(`My Checklist server listening on port ${port}`)

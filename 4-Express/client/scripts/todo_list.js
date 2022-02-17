@@ -1,4 +1,4 @@
-import { addOrUpdateItem, removeItem, getItems } from "./communication_manager";
+import { createItemData, editItemData, removeItemData, getItems } from "./todo_api";
 import { v4 as uuidv4 } from "uuid";
 import { classes } from "./style_jss";
 
@@ -93,7 +93,7 @@ import { classes } from "./style_jss";
         const newItem = createTodoItem(uniqueId, newItemInput.value, false);
 
         document.getElementById("main-container").appendChild(newItem);
-        saveToServer(uniqueId);
+        saveToServer(uniqueId, true);
 
         newItemInput.value = "";
       }
@@ -111,10 +111,10 @@ import { classes } from "./style_jss";
   }
 
   function getItemElement(id, type) {
-    let element = document.querySelector("[data-id='" + id + "']");
+    let element = document.querySelector(`[data-id='${id}']`);
 
     if (type) {
-      element = element.querySelector("[data-type='" + type + "']");
+      element = element.querySelector(`[data-type='${type}']`);
     }
 
     return element;
@@ -130,7 +130,7 @@ import { classes } from "./style_jss";
         const todoItem = getItemElement(id);
 
         document.getElementById("main-container").removeChild(todoItem);
-        removeFromServer(id);
+        removeItemData(id);
       }
     };
   }
@@ -148,7 +148,7 @@ import { classes } from "./style_jss";
           checkBtn.classList.add("checked");
         }
 
-        saveToServer(id);
+        saveToServer(id, false);
       }
     };
   }
@@ -175,7 +175,7 @@ import { classes } from "./style_jss";
           const editBtn = createButton(TYPE_EDIT_BTN, editItemCallback(id));
           todoItem.replaceChild(editBtn, confirmBtn);
 
-          saveToServer(id);
+          saveToServer(id, false);
         }
       }
     };
@@ -205,25 +205,27 @@ import { classes } from "./style_jss";
     };
   }
 
-  function saveToServer(id) {
+  function saveToServer(id, shouldCreate = true) {
     const label = getItemElement(id, TYPE_ITEM_LABEL);
     const checkBtn = getItemElement(id, TYPE_CHECK_BTN);
     let isChecked = checkBtn.dataset.checked === "true";
-
-    addOrUpdateItem(id, {
+    
+    const item = {
+      id: id,
       text: label.innerText,
       check: isChecked,
-    });
-  }
+    };
 
-  function removeFromServer(id) {
-    removeItem(id);
+    if (shouldCreate) {
+      createItemData(item);
+    } else {
+      editItemData(item);
+    }
   }
 
   function loadFromServer() {
     getItems().then((items) => {
       for (const key in items) {
-        console.log(items[key]);
         const newItem = createTodoItem(
           key,
           items[key]["text"],
