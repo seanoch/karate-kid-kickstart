@@ -14,7 +14,7 @@ const Todo = mongoose.model("Todo", TodoSchema);
 
 const MONGO_URI = process.env.MONGO_URI;
 
-module.exports.setup = () => {
+const setup = () => {
   mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -29,7 +29,7 @@ module.exports.setup = () => {
   });
 };
 
-module.exports.getItems = (userId) => {
+const getItems = (userId) => {
   const query = { user_id: userId };
 
   return Todo.find(query)
@@ -50,7 +50,7 @@ module.exports.getItems = (userId) => {
     .catch((error) => error);
 };
 
-module.exports.createItem = (userId, itemId, text, check) => {
+const createItem = (userId, itemId, text, check) => {
   const dbTodoItem = new Todo({
     user_id: userId,
     id: itemId,
@@ -62,7 +62,7 @@ module.exports.createItem = (userId, itemId, text, check) => {
     .catch((error) => error);
 };
 
-module.exports.editItem = (userId, itemId, text, check) => {
+const editItem = (userId, itemId, text, check) => {
   const query = { user_id: userId, id: itemId };
   const item = { 
     user_id: userId,
@@ -76,10 +76,18 @@ module.exports.editItem = (userId, itemId, text, check) => {
     .catch((error) => error);
 };
 
-module.exports.deleteItem = (userId, itemId) => {
+const deleteItem = (userId, itemId) => {
   const query = { user_id: userId, id: itemId };
 
   return Todo.deleteOne(query)
     .exec()
     .catch((error) => error);
+};
+
+module.exports = {
+  setup,
+  getItems,
+  createItem,
+  editItem,
+  deleteItem,
 };
