@@ -4,7 +4,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: {
-    main: path.resolve(__dirname, "scripts/todo_list.js"),
+    main: path.resolve(__dirname, "src/todo_list.js"),
   },
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -16,6 +16,12 @@ module.exports = {
     port: 5001,
     open: true,
     hot: true,
+    proxy: {
+      '/todos': {
+        target: 'http://localhost:3000',
+        secure: false
+      }
+    }
   },
   plugins: [
     new HtmlWebpackPlugin({

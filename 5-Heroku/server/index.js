@@ -1,17 +1,11 @@
 const express = require('express')
-const cors = require('cors')
 const cookieParser = require('cookie-parser')
-const todo_service = require('./todo_service')
+const todo_controller = require('./controllers/todo_controller')
+const middlewares = require('./middlewares')
 
 const app = express()
 const port = process.env.PORT || 3000;
 
-const items = {};
-
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
 app.use(
   express.urlencoded({
     extended: true
@@ -20,14 +14,17 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static('public'));
+app.use(middlewares.userIdMiddleware);
 
-app.get('/todos', todo_service.getItems);
+todo_controller.setup();
 
-app.post('/todos', todo_service.createItem);
+app.get('/todos', todo_controller.getItems);
 
-app.put('/todos/:id', todo_service.editItem);
+app.post('/todos', todo_controller.createItem);
 
-app.delete('/todos/:id', todo_service.deleteItem);
+app.put('/todos/:id', todo_controller.editItem);
+
+app.delete('/todos/:id', todo_controller.deleteItem);
 
 app.listen(port, () => {
   console.log(`My Checklist server listening on port ${port}`)

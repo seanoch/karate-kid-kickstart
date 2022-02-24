@@ -1,4 +1,9 @@
-import { createItemData, editItemData, removeItemData, getItems } from "./todo_api";
+import {
+  createItemData,
+  editItemData,
+  removeItemData,
+  getItems,
+} from "./todo_api";
 import { v4 as uuidv4 } from "uuid";
 import { classes } from "./style_jss";
 
@@ -60,13 +65,7 @@ import { classes } from "./style_jss";
 
     const newItemCheckBtn = createButton(TYPE_CHECK_BTN, checkItemCallback(id));
     newItemContainer.appendChild(newItemCheckBtn);
-
-    if (check) {
-      newItemCheckBtn.dataset.checked = "true";
-      newItemCheckBtn.classList.add("checked");
-    } else {
-      newItemCheckBtn.dataset.checked = "false";
-    }
+    setCheckButtonState(newItemCheckBtn, check);
 
     const newItemLabel = createItemLabel(id, text);
     newItemContainer.appendChild(newItemLabel);
@@ -120,9 +119,19 @@ import { classes } from "./style_jss";
     return element;
   }
 
-  function isInEditMode(id) {
-    return getItemElement(id, TYPE_ITEM_INPUT) !== null;
+  const isInEditMode = (id) => getItemElement(id, TYPE_ITEM_INPUT) !== null;
+
+  function setCheckButtonState(element, checked) {
+    if (checked) {
+      element.dataset.checked = "true";
+      element.classList.add("checked");
+    } else {
+      element.dataset.checked = "false";
+      element.classList.remove("checked");
+    }
   }
+
+  const getCheckButtonState = (element) => element.dataset.checked === "true";
 
   function removeItemCallback(id) {
     return function () {
@@ -140,13 +149,7 @@ import { classes } from "./style_jss";
       if (!isInEditMode(id)) {
         const checkBtn = getItemElement(id, TYPE_CHECK_BTN);
 
-        if (checkBtn.dataset.checked == "true") {
-          checkBtn.dataset.checked = "false";
-          checkBtn.classList.remove("checked");
-        } else {
-          checkBtn.dataset.checked = "true";
-          checkBtn.classList.add("checked");
-        }
+        setCheckButtonState(checkBtn, !getCheckButtonState(checkBtn));
 
         saveToServer(id, false);
       }
@@ -208,12 +211,11 @@ import { classes } from "./style_jss";
   function saveToServer(id, shouldCreate = true) {
     const label = getItemElement(id, TYPE_ITEM_LABEL);
     const checkBtn = getItemElement(id, TYPE_CHECK_BTN);
-    let isChecked = checkBtn.dataset.checked === "true";
-    
+
     const item = {
       id: id,
       text: label.innerText,
-      check: isChecked,
+      check: getCheckButtonState(checkBtn),
     };
 
     if (shouldCreate) {
@@ -223,17 +225,17 @@ import { classes } from "./style_jss";
     }
   }
 
-  function loadFromServer() {
-    getItems().then((items) => {
-      for (const key in items) {
-        const newItem = createTodoItem(
-          key,
-          items[key]["text"],
-          items[key]["check"]
-        );
+  async function loadFromServer() {
+    try {
+      const items = await getItems();
+      items.forEach((item) => {
+        const newItem = createTodoItem(item["id"], item["text"], item["check"]);
         document.getElementById("main-container").appendChild(newItem);
-      }
-    });
+      });
+    } catch (e) {
+      console.log(`error loading items from the server`, e);
+      alert("Ooops, could not load items from the server :(");
+    }
   }
 
   addBtn.addEventListener("click", addItemCallback);
