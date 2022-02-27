@@ -4,7 +4,6 @@ const TODOS_ENDPOINT = "todos";
 function createItemData(item) {
   return axios
     .post(`/${TODOS_ENDPOINT}`, item)
-    .then(response => response)
     .catch(error => error);
 }
 
@@ -13,7 +12,6 @@ function editItemData(item) {
 
   return axios
     .put(urlWithId, item)
-    .then(response => response)
     .catch(error => error);
 }
 
@@ -22,7 +20,6 @@ function removeItemData(id) {
 
   return axios
     .delete(urlWithId)
-    .then(response => response)
     .catch(error => error);
 }
 
