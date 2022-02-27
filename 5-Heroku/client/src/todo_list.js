@@ -134,12 +134,17 @@ import { classes } from "./style_jss";
   const getCheckButtonState = (element) => element.dataset.checked === "true";
 
   function removeItemCallback(id) {
-    return function () {
+    return async function () {
       if (!isInEditMode(id)) {
         const todoItem = getItemElement(id);
 
         document.getElementById("main-container").removeChild(todoItem);
-        removeItemData(id);
+        try {
+          await removeItemData(id);
+        } catch (e) {
+          console.log(`error removing item on the server`, e);
+          alert("Ooops, could not remove the item on the server :(");
+        }
       }
     };
   }
@@ -208,7 +213,7 @@ import { classes } from "./style_jss";
     };
   }
 
-  function saveToServer(id, shouldCreate = true) {
+  async function saveToServer(id, shouldCreate = true) {
     const label = getItemElement(id, TYPE_ITEM_LABEL);
     const checkBtn = getItemElement(id, TYPE_CHECK_BTN);
 
@@ -219,9 +224,19 @@ import { classes } from "./style_jss";
     };
 
     if (shouldCreate) {
-      createItemData(item);
+      try {
+        await createItemData(item);
+      } catch (e) {
+        console.log(`error creating item on the server`, e);
+        alert("Ooops, could not add the item on the server :(");
+      }
     } else {
-      editItemData(item);
+      try {
+        await editItemData(item);
+      } catch (e) {
+        console.log(`error updating item on the server`, e);
+        alert("Ooops, could not update the item on the server :(");
+      }
     }
   }
 
