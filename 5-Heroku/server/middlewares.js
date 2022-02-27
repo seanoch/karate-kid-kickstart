@@ -1,7 +1,7 @@
 const uuid = require("uuid");
 
 module.exports.userIdMiddleware = (req, res, next) => {
-  let userId = req.cookies ? req.cookies.userId : undefined;
+  let userId = req.cookies?.userId;
 
   if (userId === undefined) {
     userId = uuid.v4();
