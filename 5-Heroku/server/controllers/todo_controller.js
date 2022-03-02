@@ -12,7 +12,7 @@ const createItem = (req, res) => {
   const { id, text, check } = req.body;
   const { userId } = req;
 
-  return todo_service
+  todo_service
     .createItem(userId, id, text, check)
     .then(() => res.sendStatus(201))
     .catch((err) => res.status(500).send(err));
@@ -23,7 +23,7 @@ const editItem = (req, res) => {
   const { text, check } = req.body;
   const { userId } = req;
 
-  return todo_service
+  todo_service
     .editItem(userId, id, text, check)
     .then(() => res.sendStatus(200))
     .catch((err) => res.status(500).send(err));
