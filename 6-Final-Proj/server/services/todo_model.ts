@@ -1,21 +1,22 @@
 import mongoose, { Schema, Model } from "mongoose";
 import { ITodoModel } from "../types";
-import { TodoItem } from "../../common/types"
+import { TodoItem } from "../../common/types";
 
+const TodoSchema = new Schema<TodoItem>({
+  userId: { type: String, required: true },
+  id: { type: String, required: true },
+  text: { type: String, required: true },
+  check: { type: Boolean, required: true },
+});
 export class MongoTodoModel implements ITodoModel {
   Todo: Model<TodoItem>;
 
   constructor() {
-    const TodoSchema = new Schema<TodoItem>({
-      userId: { type: String, required: true },
-      id: { type: String, required: true },
-      text: { type: String, required: true },
-      check: { type: Boolean, required: true },
-    });
-
-    TodoSchema.index({ userId: 1, id: 1 }, { unique: true });
-
     this.Todo = mongoose.model("Todo", TodoSchema);
+  }
+
+  createIndex() {
+    this.Todo.collection.createIndex({ userId: 1, id: 1 }, { unique: true });
   }
 
   getItems(userId: string): Promise<Array<TodoItem>> {
@@ -42,7 +43,7 @@ export class MongoTodoModel implements ITodoModel {
   createItem(item: TodoItem): Promise<boolean> {
     const dbTodoItem = new this.Todo(item);
 
-    return dbTodoItem.save().then(docs => true);
+    return dbTodoItem.save().then((docs) => true);
   }
 
   editItem(item: TodoItem): Promise<boolean> {
@@ -50,7 +51,7 @@ export class MongoTodoModel implements ITodoModel {
 
     return this.Todo.findOneAndUpdate(query, item)
       .exec()
-      .then(docs => docs!=null);
+      .then((docs) => docs != null);
   }
 
   deleteItem(userId: string, itemId: string): Promise<boolean> {
@@ -58,6 +59,6 @@ export class MongoTodoModel implements ITodoModel {
 
     return this.Todo.deleteOne(query)
       .exec()
-      .then(obj => obj.deletedCount==1);
+      .then((obj) => obj.deletedCount == 1);
   }
 }

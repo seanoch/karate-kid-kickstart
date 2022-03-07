@@ -30,6 +30,8 @@ describe("POST /todos", () => {
 
       testkit.appDriver?.setUserId("1");
 
+      console.log("hey");
+
       try {
         const response: AxiosResponse|undefined = await testkit.appDriver?.createItem(
           todo1

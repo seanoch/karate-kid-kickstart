@@ -14,6 +14,7 @@ export class TestTodoService extends MongoTodoModel implements IDBConnection {
     try {
       this.mongoServer = await MongoMemoryServer.create();
       await mongoose.connect(this.mongoServer.getUri());
+      this.createIndex();
     } catch (e) {
       console.log(e);
     }
@@ -21,7 +22,6 @@ export class TestTodoService extends MongoTodoModel implements IDBConnection {
 
   async teardown() {
     await mongoose.connection.dropDatabase();
-    delete mongoose.connection.models["Todo"];
     await mongoose.connection.close();
 
     if (this.mongoServer) {

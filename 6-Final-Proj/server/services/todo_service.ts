@@ -16,6 +16,7 @@ export class MongoTodoService extends MongoTodoModel implements IDBConnection {
   async setup() {
     try {
       await mongoose.connect(this.mongoURI);
+      this.createIndex();
       console.log("MobgoDB is connected!");
     } catch (error) {
       console.log(error);
