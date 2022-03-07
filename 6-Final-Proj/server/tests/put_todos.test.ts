@@ -31,7 +31,7 @@ describe("PUT /todos", () => {
   });
 
   describe("When the item doesn't exist", () => {
-    it("should return 404 and the item shouldn't be added to the DB", async () => {
+    it("should return 400 and the item shouldn't be added to the DB", async () => {
       const todo1: TodoItem = {
         userId: "1",
         id: "1",
@@ -46,7 +46,7 @@ describe("PUT /todos", () => {
           await testkit.appDriver?.editItem(todo1);
         expect(true).toBe(false);
       } catch (err: any) {
-        expect(err.response.status).toBe(404);
+        expect(err.response.status).toBe(400);
         const allItems = await testkit.dbDriver?.getItems("1");
         expect(allItems?.length).toBe(0);
       }

@@ -40,14 +40,14 @@ export class TodoController {
 
       return this.db
         .editItem(item)
-        .then((success) => success ? res.sendStatus(200) : res.sendStatus(404))
+        .then((success) => success ? res.sendStatus(200) : res.sendStatus(400))
         .catch((err) => res.status(500).send(err));
   }
 
   deleteItem = (req: Request, res: Response) => {
       return this.db
         .deleteItem(req.body.userId, req.params.id)
-        .then((success) =>  success ? res.sendStatus(200) : res.sendStatus(404))
+        .then((success) =>  success ? res.sendStatus(200) : res.sendStatus(400))
         .catch((err) => res.status(500).send(err));
   }
 }

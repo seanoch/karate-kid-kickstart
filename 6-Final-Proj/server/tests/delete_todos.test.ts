@@ -29,7 +29,7 @@ describe("DELETE /todos", () => {
   });
 
   describe("When the item doesn't exist", () => {
-    it("should return 404 and the item shouldn't be added to the DB", async () => {
+    it("should return 400 and the item shouldn't be added to the DB", async () => {
       const todo1: TodoItem = {
         userId: "1",
         id: "1",
@@ -44,7 +44,7 @@ describe("DELETE /todos", () => {
           await testkit.appDriver?.deleteItem(todo1.id);
         expect(true).toBe(false);
       } catch (err: any) {
-        expect(err.response.status).toBe(404);
+        expect(err.response.status).toBe(400);
         const allItems = await testkit.dbDriver?.getItems("1");
         expect(allItems).not.toContainEqual(todo1);
       }
