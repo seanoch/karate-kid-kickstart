@@ -52,4 +52,8 @@ describe("PUT /todos", () => {
       }
     });
   });
+
+  describe("When removing a property from the item", () => {
+    it.todo("should return 400 and the item should not be added to the DB");
+  });
 });

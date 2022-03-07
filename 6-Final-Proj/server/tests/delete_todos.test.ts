@@ -7,7 +7,7 @@ const testkit = new Testkit();
 describe("DELETE /todos", () => {
   testkit.beforeAndAfterEach();
   describe("When the item exists", () => {
-    it("should return 200 and the item should be delted", async () => {
+    it("should return 200 and the item should be deleted", async () => {
       const todo1: TodoItem = {
         userId: "1",
         id: "1",
