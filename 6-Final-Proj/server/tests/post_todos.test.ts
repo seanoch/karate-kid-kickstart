@@ -1,6 +1,5 @@
 import { Testkit } from "./testkit";
-import { AxiosResponse, AxiosError } from "axios";
-import axios from "axios";
+import axios, { AxiosResponse, AxiosError } from "axios";
 import { TodoItem } from "../../common/types";
 
 const testkit = new Testkit();
@@ -55,7 +54,6 @@ describe("POST /todos", () => {
     try {
       const response: AxiosResponse | undefined =
         await testkit.appDriver?.createItem(todo1);
-      expect(true).toBe(false);
     } catch (err) {
       if (axios.isAxiosError(err)) {
         thrownError = err;

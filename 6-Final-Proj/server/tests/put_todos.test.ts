@@ -1,5 +1,5 @@
 import { Testkit } from "./testkit";
-import { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { TodoItem } from "../../common/types";
 
 const testkit = new Testkit();
@@ -38,18 +38,22 @@ describe("PUT /todos", () => {
       text: "hi",
       check: false,
     };
+    let thrownError: AxiosError | undefined;
 
     testkit.appDriver?.setUserId("1");
 
     try {
       const response: AxiosResponse | undefined =
         await testkit.appDriver?.editItem(todo1);
-      expect(true).toBe(false);
-    } catch (err: any) {
-      expect(err.response.status).toBe(400);
-      const allItems = await testkit.dbDriver?.getItems("1");
-      expect(allItems?.length).toBe(0);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        thrownError = err;
+      }
     }
+
+    expect(thrownError?.response?.status).toBe(400);
+    const allItems = await testkit.dbDriver?.getItems("1");
+    expect(allItems?.length).toBe(0);
   });
 
   it.todo(
