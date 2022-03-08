@@ -7,7 +7,7 @@ export class Testkit {
   app?: express.Application;
   dbDriver?: TestTodoService;
   appDriver?: AppDriver;
-  server: Server;
+  server?: Server;
 
   beforeEach = async () => {
     const port = Math.ceil(Math.random() * 10000 + 1000);

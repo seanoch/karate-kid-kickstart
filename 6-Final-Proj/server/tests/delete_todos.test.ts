@@ -26,7 +26,7 @@ describe("DELETE /todos", () => {
     expect(response?.status).toBe(200);
 
     const allItems = await testkit.dbDriver?.getItems("1");
-    expect(allItems.length).toBe(0);
+    expect(allItems?.length).toBe(0);
   });
 
   it("When the item doesn't exist, \
@@ -51,8 +51,8 @@ describe("DELETE /todos", () => {
       }
     }
 
-    expect(thrownError?.response.status).toBe(400);
+    expect(thrownError?.response?.status).toBe(400);
     const allItems = await testkit.dbDriver?.getItems("1");
-    expect(allItems.length).toBe(0);
+    expect(allItems?.length).toBe(0);
   });
 });
