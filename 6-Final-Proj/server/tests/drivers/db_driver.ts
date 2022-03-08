@@ -1,4 +1,4 @@
-import mongoose, { Schema, Model } from "mongoose";
+import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { MongoTodoModel } from "../../services/todo_model";
 import { IDBConnection } from "../../types";
@@ -11,22 +11,15 @@ export class TestTodoService extends MongoTodoModel implements IDBConnection {
   }
 
   async setup() {
-    try {
-      this.mongoServer = await MongoMemoryServer.create();
-      await mongoose.connect(this.mongoServer.getUri());
-      this.createIndex();
-    } catch (e) {
-      console.log(e);
-    }
+    this.mongoServer = await MongoMemoryServer.create();
+    await mongoose.connect(this.mongoServer.getUri());
+    this.createIndex();
   }
 
   async teardown() {
     await mongoose.connection.dropDatabase();
     await mongoose.connection.close();
-
-    if (this.mongoServer) {
-      await this.mongoServer.stop();
-    }
+    await this.mongoServer?.stop();
   }
 
   async clearDatabase() {

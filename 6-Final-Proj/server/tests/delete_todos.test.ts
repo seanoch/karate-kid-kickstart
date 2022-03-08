@@ -1,53 +1,58 @@
 import { Testkit } from "./testkit";
-import { AxiosResponse } from "axios";
+import { AxiosResponse, AxiosError } from "axios";
+import axios from "axios";
 import { TodoItem } from "../../common/types";
 
 const testkit = new Testkit();
 
 describe("DELETE /todos", () => {
   testkit.beforeAndAfterEach();
-  describe("When the item exists", () => {
-    it("should return 200 and the item should be deleted", async () => {
-      const todo1: TodoItem = {
-        userId: "1",
-        id: "1",
-        text: "hi",
-        check: false,
-      };
 
-      await testkit.dbDriver?.createItem(todo1);
+  it("When the item exists, \
+  it should return 200 and the item should be deleted", async () => {
+    const todo1: TodoItem = {
+      userId: "1",
+      id: "1",
+      text: "hi",
+      check: false,
+    };
 
-      testkit.appDriver?.setUserId("1");
-      const response: AxiosResponse | undefined =
-        await testkit.appDriver?.deleteItem(todo1.id);
+    await testkit.dbDriver?.createItem(todo1);
 
-      expect(response?.status).toBe(200);
+    testkit.appDriver?.setUserId("1");
+    const response: AxiosResponse | undefined =
+      await testkit.appDriver?.deleteItem(todo1.id);
 
-      const allItems = await testkit.dbDriver?.getItems("1");
-      expect(allItems).not.toContainEqual(todo1);
-    });
+    expect(response?.status).toBe(200);
+
+    const allItems = await testkit.dbDriver?.getItems("1");
+    expect(allItems.length).toBe(0);
   });
 
-  describe("When the item doesn't exist", () => {
-    it("should return 400 and the item shouldn't be added to the DB", async () => {
-      const todo1: TodoItem = {
-        userId: "1",
-        id: "1",
-        text: "hi",
-        check: false,
-      };
+  it("When the item doesn't exist, \
+  it should return 400 and the item shouldn't be added to the DB", async () => {
+    const todo1: TodoItem = {
+      userId: "1",
+      id: "1",
+      text: "hi",
+      check: false,
+    };
 
-      testkit.appDriver?.setUserId("1");
+    let thrownError: AxiosError | undefined;
 
-      try {
-        const response: AxiosResponse | undefined =
-          await testkit.appDriver?.deleteItem(todo1.id);
-        expect(true).toBe(false);
-      } catch (err: any) {
-        expect(err.response.status).toBe(400);
-        const allItems = await testkit.dbDriver?.getItems("1");
-        expect(allItems).not.toContainEqual(todo1);
+    testkit.appDriver?.setUserId("1");
+
+    try {
+      const response: AxiosResponse | undefined =
+        await testkit.appDriver?.deleteItem(todo1.id);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        thrownError = err;
       }
-    });
+    }
+
+    expect(thrownError?.response.status).toBe(400);
+    const allItems = await testkit.dbDriver?.getItems("1");
+    expect(allItems.length).toBe(0);
   });
 });

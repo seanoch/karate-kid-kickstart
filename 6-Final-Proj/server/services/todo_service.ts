@@ -3,28 +3,22 @@ import { IDBConnection } from "../types";
 import { MongoTodoModel } from "./todo_model";
 import dotenv from "dotenv";
 
+dotenv.config();
 export class MongoTodoService extends MongoTodoModel implements IDBConnection {
   mongoURI: string;
 
   constructor() {
     super();
-
-    dotenv.config();
     this.mongoURI = process.env.MONGO_URI || "";
   }
 
   async setup() {
-    try {
-      await mongoose.connect(this.mongoURI);
-      this.createIndex();
-      console.log("MobgoDB is connected!");
-    } catch (error) {
-      console.log(error);
-    }
+    await mongoose.connect(this.mongoURI);
+    this.createIndex();
   }
 
-  async teardown() {
-    await mongoose.connection.close();
+  teardown() {
+    return mongoose.connection.close();
   }
 
   async clearDatabase() {
@@ -34,5 +28,4 @@ export class MongoTodoService extends MongoTodoModel implements IDBConnection {
       await collection.deleteMany({});
     }
   }
-
 }
