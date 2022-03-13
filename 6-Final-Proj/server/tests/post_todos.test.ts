@@ -25,7 +25,7 @@ describe("POST /todos", () => {
   });
 
   it("When creating an item with an ID that already exists for that user, \
-    it should return 400 and the item should not be added to the DB", async () => {
+    it should return 400 with a DuplicateKeyError", async () => {
     const userId = getRandomUserId();
     const todo1: TodoItem = getRandomItem();
     let thrownError: AxiosError | undefined;
@@ -44,12 +44,13 @@ describe("POST /todos", () => {
     }
 
     expect(thrownError?.response?.status).toBe(400);
+    expect(thrownError?.response?.data?.name).toBe("DuplicateKeyError");
     const allItems = await testkit.dbDriver?.getItems(userId);
     expect(allItems?.length).toBe(1);
   });
 
   it("When creating an item with a missing property, \
-    it should return 400 and the item should not be added to the DB", async () => {
+    it should return 400 with a ValidationError", async () => {
     const userId = getRandomUserId();
     const todo1: Partial<TodoItem> = getRandomPartialItem();
     let thrownError: AxiosError | undefined;
@@ -66,6 +67,8 @@ describe("POST /todos", () => {
     }
 
     expect(thrownError?.response?.status).toBe(400);
+    console.log(thrownError?.response?.data);
+    expect(thrownError?.response?.data?.name).toBe("ValidationError");
     const allItems = await testkit.dbDriver?.getItems(userId);
     expect(allItems?.length).toBe(0);
   });

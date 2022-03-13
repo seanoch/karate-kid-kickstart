@@ -1,6 +1,7 @@
 import mongoose, { Schema, Model } from "mongoose";
-import { ITodoModel } from "../types";
+import { ITodoModel, ValidationError, DuplicateKeyError } from "../types";
 import { TodoItem } from "../../common/types";
+import { MongoError } from "mongodb";
 
 interface TodoItemDBEntry extends TodoItem {
   userId: string;
@@ -26,7 +27,8 @@ export class MongoTodoModel implements ITodoModel {
   getItems(userId: string): Promise<Array<TodoItem>> {
     const query = { userId };
 
-    return this.model.find(query)
+    return this.model
+      .find(query)
       .exec()
       .then((docs) => {
         let items: Array<TodoItem> = [];
@@ -43,16 +45,30 @@ export class MongoTodoModel implements ITodoModel {
       });
   }
 
-  createItem(userId: string, item: TodoItem): Promise<boolean> {
+  createItem(userId: string, item: TodoItem): Promise<boolean | void> {
     const itemDBEntry: TodoItemDBEntry = {
       userId: userId,
       id: item.id,
       text: item.text,
-      check: item.check
+      check: item.check,
     };
     const dbTodoItem = new this.model(itemDBEntry);
 
-    return dbTodoItem.save().then((docs) => true);
+    return dbTodoItem
+      .save()
+      .then((docs) => true)
+      .catch((error) => {
+        if (error instanceof mongoose.Error.ValidationError) {
+          const messages: Array<string> = Object.values(error.errors).map(
+            (err) => err.message
+          );
+          throw new ValidationError(messages.join("/n"));
+        } else if ((error as MongoError).code === 11000) {
+          throw new DuplicateKeyError("An item with such ID already exists!");
+        } else {
+          throw new Error("Something went wrong");
+        }
+      });
   }
 
   editItem(userId: string, item: TodoItem): Promise<boolean> {
@@ -60,11 +76,12 @@ export class MongoTodoModel implements ITodoModel {
       userId: userId,
       id: item.id,
       text: item.text,
-      check: item.check
+      check: item.check,
     };
     const query = { userId: userId, id: item.id };
 
-    return this.model.findOneAndUpdate(query, itemDBEntry)
+    return this.model
+      .findOneAndUpdate(query, itemDBEntry)
       .exec()
       .then((docs) => docs != null);
   }
@@ -72,7 +89,8 @@ export class MongoTodoModel implements ITodoModel {
   deleteItem(userId: string, itemId: string): Promise<boolean> {
     const query = { userId: userId, id: itemId };
 
-    return this.model.deleteOne(query)
+    return this.model
+      .deleteOne(query)
       .exec()
       .then((obj) => obj.deletedCount == 1);
   }

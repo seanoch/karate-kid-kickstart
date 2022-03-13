@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ITodoModel } from "../types";
+import { ITodoModel, ValidationError, DuplicateKeyError } from "../types";
 import { TodoItem } from "../../common/types";
 export class TodoController {
   constructor(private db: ITodoModel) {}
@@ -10,14 +10,23 @@ export class TodoController {
       .then((items) => res.status(200).send(items));
   };
 
-  createItem = (req: Request<TodoItem>, res: Response<void>) => {
+  createItem = (req: Request<TodoItem>, res: Response<void | Error>) => {
     const item: TodoItem = req.body;
     const userId = req.cookies.userId;
 
     this.db
       .createItem(userId, item)
       .then((success) => res.sendStatus(201))
-      .catch((err) => res.status(400).send(err));
+      .catch((err) => {
+        if (
+          err instanceof ValidationError ||
+          err instanceof DuplicateKeyError
+        ) {
+          res.status(400).send(err);
+        } else {
+          res.status(500).send(err);
+        }
+      });
   };
 
   editItem = (req: Request<TodoItem>, res: Response<void>) => {
