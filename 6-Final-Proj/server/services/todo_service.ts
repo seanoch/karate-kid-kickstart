@@ -5,29 +5,34 @@ import dotenv from "dotenv";
 
 dotenv.config();
 export class MongoTodoService extends MongoTodoModel implements IDBConnection {
+  MAX_CONNECTION_ATTEMPTS: number = 2;
+  CONNECTION_ATTEMPTS_INTERVAL: number = 5000;
   mongoURI: string;
-  connectionAttempts: number;
 
   constructor() {
     super();
     this.mongoURI = process.env.MONGO_URI || "";
-    this.connectionAttempts = 0;
+  }
+
+  async sleep(ms: number) {
+    await new Promise((r) => setTimeout(r, ms));
   }
 
   async setup() {
-    let success = false;
-    let attempts = 0;
+    let attempts: number = 0;
+    let connected: boolean = false;
 
-    while (!success && attempts < 2) {
+    while (attempts < this.MAX_CONNECTION_ATTEMPTS && !connected) {
       try {
         await mongoose.connect(this.mongoURI);
-        success = true;
+        connected = true;
       } catch (err) {
         attempts++;
+        await this.sleep(this.CONNECTION_ATTEMPTS_INTERVAL);
       }
     }
 
-    if (!success) {
+    if (!connected) {
       process.exit(1);
     }
 
