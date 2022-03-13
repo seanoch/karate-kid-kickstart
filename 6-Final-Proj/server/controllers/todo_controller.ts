@@ -4,51 +4,34 @@ import { TodoItem } from "../../common/types";
 export class TodoController {
   constructor(private db: ITodoModel) {}
 
-  getItems = (req: Request, res: Response) => {
-    return this.db
-      .getItems(req.body.userId)
+  getItems = (req: Request<void>, res: Response<Array<TodoItem>>) => {
+    this.db
+      .getItems(req.cookies.userId)
       .then((items) => res.status(200).send(items));
   };
 
-  createItem = (req: Request, res: Response) => {
-    const { id, text, check, userId }: TodoItem = req.body;
+  createItem = (req: Request<TodoItem>, res: Response<void>) => {
+    const item: TodoItem = req.body;
+    const userId = req.cookies.userId;
 
-    const item: TodoItem = {
-      userId: userId,
-      id: id,
-      text: text,
-      check: check,
-    };
-
-    return this.db
-      .createItem(item)
+    this.db
+      .createItem(userId, item)
       .then((success) => res.sendStatus(201))
       .catch((err) => res.status(400).send(err));
   };
 
-  editItem = (req: Request, res: Response) => {
-    const { id } = req.params;
-    const {
-      text,
-      check,
-      userId,
-    }: { text: string; check: boolean; userId: string } = req.body;
+  editItem = (req: Request<TodoItem>, res: Response<void>) => {
+    const userId = req.cookies.userId;
+    const item: TodoItem = req.body;
 
-    const item: TodoItem = {
-      userId: userId,
-      id: id,
-      text: text,
-      check: check,
-    };
-
-    return this.db
-      .editItem(item)
+    this.db
+      .editItem(userId, item)
       .then((success) => (success ? res.sendStatus(200) : res.sendStatus(400)));
   };
 
-  deleteItem = (req: Request, res: Response) => {
-    return this.db
-      .deleteItem(req.body.userId, req.params.id)
+  deleteItem = (req: Request<TodoItem>, res: Response<void>) => {
+    this.db
+      .deleteItem(req.cookies.userId, req.params.id)
       .then((success) => (success ? res.sendStatus(200) : res.sendStatus(400)));
   };
 }

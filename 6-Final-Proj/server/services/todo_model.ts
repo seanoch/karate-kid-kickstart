@@ -2,14 +2,18 @@ import mongoose, { Schema, Model } from "mongoose";
 import { ITodoModel } from "../types";
 import { TodoItem } from "../../common/types";
 
-const TodoSchema = new Schema<TodoItem>({
+interface TodoItemDBEntry extends TodoItem {
+  userId: string;
+}
+
+const TodoSchema = new Schema<TodoItemDBEntry>({
   userId: { type: String, required: true },
   id: { type: String, required: true },
   text: { type: String, required: true },
   check: { type: Boolean, required: true },
 });
 export class MongoTodoModel implements ITodoModel {
-  model: Model<TodoItem>;
+  model: Model<TodoItemDBEntry>;
 
   constructor() {
     this.model = mongoose.model("Todo", TodoSchema);
@@ -29,7 +33,6 @@ export class MongoTodoModel implements ITodoModel {
 
         items = docs.map(function (doc) {
           return {
-            userId: doc.userId,
             id: doc.id,
             text: doc.text,
             check: doc.check,
@@ -40,16 +43,28 @@ export class MongoTodoModel implements ITodoModel {
       });
   }
 
-  createItem(item: TodoItem): Promise<boolean> {
-    const dbTodoItem = new this.model(item);
+  createItem(userId: string, item: TodoItem): Promise<boolean> {
+    const itemDBEntry: TodoItemDBEntry = {
+      userId: userId,
+      id: item.id,
+      text: item.text,
+      check: item.check
+    };
+    const dbTodoItem = new this.model(itemDBEntry);
 
     return dbTodoItem.save().then((docs) => true);
   }
 
-  editItem(item: TodoItem): Promise<boolean> {
-    const query = { userId: item.userId, id: item.id };
+  editItem(userId: string, item: TodoItem): Promise<boolean> {
+    const itemDBEntry: TodoItemDBEntry = {
+      userId: userId,
+      id: item.id,
+      text: item.text,
+      check: item.check
+    };
+    const query = { userId: userId, id: item.id };
 
-    return this.model.findOneAndUpdate(query, item)
+    return this.model.findOneAndUpdate(query, itemDBEntry)
       .exec()
       .then((docs) => docs != null);
   }

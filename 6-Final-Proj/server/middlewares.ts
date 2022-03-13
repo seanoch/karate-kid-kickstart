@@ -9,7 +9,7 @@ export const userIdMiddleware: RequestHandler = (req, res, next) => {
     res.cookie("userId", userId);
   }
 
-  req.body.userId = userId;
+  req.cookies.userId = userId;
 
   next();
 };
