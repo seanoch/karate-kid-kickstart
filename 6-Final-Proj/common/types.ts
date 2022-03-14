@@ -1,5 +1,7 @@
+export type guid = string;
+
 export interface TodoItem {
-    id: string;
+    id: guid;
     text: string;
     check: boolean;
   }

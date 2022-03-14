@@ -1,10 +1,10 @@
-import {TodoItem} from "../common/types"
+import {TodoItem, guid} from "../common/types"
 
 export interface ITodoModel {
-  getItems(userId: string): Promise<Array<TodoItem>>;
-  createItem(userId: string, item: TodoItem): Promise<boolean|void>;
-  editItem(userId: string, item: TodoItem): Promise<boolean>;
-  deleteItem(userId: string, itemId: string): Promise<boolean>;
+  getItems(userId: guid): Promise<Array<TodoItem>>;
+  createItem(userId: guid, item: TodoItem): Promise<boolean|void>;
+  editItem(userId: guid, item: TodoItem): Promise<boolean>;
+  deleteItem(userId: guid, itemId: guid): Promise<boolean>;
 }
 
 export interface IDBConnection {

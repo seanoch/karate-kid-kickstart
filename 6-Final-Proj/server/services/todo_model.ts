@@ -1,10 +1,10 @@
 import mongoose, { Schema, Model } from "mongoose";
 import { ITodoModel, ValidationError, DuplicateKeyError } from "../types";
-import { TodoItem } from "../../common/types";
+import { TodoItem, guid } from "../../common/types";
 import { MongoError } from "mongodb";
 
 interface TodoItemDBEntry extends TodoItem {
-  userId: string;
+  userId: guid;
 }
 
 const TodoSchema = new Schema<TodoItemDBEntry>({
@@ -24,7 +24,7 @@ export class MongoTodoModel implements ITodoModel {
     this.model.collection.createIndex({ userId: 1, id: 1 }, { unique: true });
   }
 
-  getItems(userId: string): Promise<Array<TodoItem>> {
+  getItems(userId: guid): Promise<Array<TodoItem>> {
     const query = { userId };
 
     return this.model
@@ -45,7 +45,7 @@ export class MongoTodoModel implements ITodoModel {
       });
   }
 
-  createItem(userId: string, item: TodoItem): Promise<boolean | void> {
+  createItem(userId: guid, item: TodoItem): Promise<boolean | void> {
     const itemDBEntry: TodoItemDBEntry = {
       userId: userId,
       id: item.id,
@@ -71,7 +71,7 @@ export class MongoTodoModel implements ITodoModel {
       });
   }
 
-  editItem(userId: string, item: TodoItem): Promise<boolean> {
+  editItem(userId: guid, item: TodoItem): Promise<boolean> {
     const itemDBEntry: TodoItemDBEntry = {
       userId: userId,
       id: item.id,
@@ -86,7 +86,7 @@ export class MongoTodoModel implements ITodoModel {
       .then((docs) => docs != null);
   }
 
-  deleteItem(userId: string, itemId: string): Promise<boolean> {
+  deleteItem(userId: guid, itemId: guid): Promise<boolean> {
     const query = { userId: userId, id: itemId };
 
     return this.model
