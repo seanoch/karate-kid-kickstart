@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
-import { ITodoModel, ValidationError, DuplicateKeyError } from "../types";
+import { ITodoDAO, ValidationError, DuplicateKeyError } from "../types";
 import { TodoItem, guid } from "../../common/types";
+import { getUserId } from "../identity.utils";
 export class TodoController {
-  constructor(private db: ITodoModel) {}
+  constructor(private db: ITodoDAO) {}
 
-  getItems = (req: Request<{}, any, void>, res: Response<Array<TodoItem>>) => {
+  getItems = (req: Request, res: Response<Array<TodoItem>>) => {
     this.db
-      .getItems(req.cookies.userId)
+      .getItems(getUserId(req))
       .then((items) => res.status(200).send(items));
   };
 
@@ -15,7 +16,7 @@ export class TodoController {
     res: Response<void | Error>
   ) => {
     const item: TodoItem = req.body;
-    const userId = req.cookies.userId;
+    const userId = getUserId(req);
 
     this.db
       .createItem(userId, item)
@@ -34,9 +35,9 @@ export class TodoController {
 
   editItem = (
     req: Request<{ id: guid }, any, TodoItem>,
-    res: Response<void>
+    res: Response
   ) => {
-    const userId = req.cookies.userId;
+    const userId = getUserId(req);
     const item: TodoItem = req.body;
 
     this.db
@@ -45,11 +46,11 @@ export class TodoController {
   };
 
   deleteItem = (
-    req: Request<{ id: guid }, any, guid>,
-    res: Response<void>
+    req: Request<{ id: guid }>,
+    res: Response
   ) => {
     this.db
-      .deleteItem(req.cookies.userId, req.params.id)
+      .deleteItem(getUserId(req), req.params.id)
       .then((success) => (success ? res.sendStatus(200) : res.sendStatus(400)));
   };
 }

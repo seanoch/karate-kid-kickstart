@@ -1,30 +1,28 @@
 import { AxiosResponse } from "axios";
 import { TodoItem } from "../../common/types";
 import { Testkit } from "./testkit";
-import { getRandomItem, getRandomUserId } from "./utils";
+import { aRandomItem, aUserId } from "./utils";
 
 const testkit = new Testkit();
 
-describe("GET /todos", () => {
+describe("On GET /todos", () => {
   testkit.beforeAndAfterEach();
 
-  it("When user doesn't exist, \
-  it should return an empty array", async () => {
-    const userId = getRandomUserId();
+  it("should return an empty array when the user doesn't exist", async () => {
+    const userId = aUserId();
 
     const response: AxiosResponse | undefined =
       await testkit.appDriver?.getItems();
     expect(response?.data.length).toBe(0);
   });
 
-  it("When user has todos, \
-  it should return only that user's todos", async () => {
-    const userId1 = getRandomUserId();
-    const userId2 = getRandomUserId();
+  it("should return only user's todos when such exist", async () => {
+    const userId1 = aUserId();
+    const userId2 = aUserId();
 
-    const todo1: TodoItem = getRandomItem();
-    const todo2: TodoItem = getRandomItem();
-    const todo3: TodoItem = getRandomItem();
+    const todo1: TodoItem = aRandomItem({});
+    const todo2: TodoItem = aRandomItem({});
+    const todo3: TodoItem = aRandomItem({});
 
     await testkit.dbDriver?.createItem(userId1, todo1);
     await testkit.dbDriver?.createItem(userId1, todo2);

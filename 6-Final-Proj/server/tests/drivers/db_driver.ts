@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { MongoTodoModel } from "../../services/todo_model";
+import { MongoTodoDAO } from "../../model/todo_dao";
 import { IDBConnection } from "../../types";
 
-export class TestTodoService extends MongoTodoModel implements IDBConnection {
+export class InMemoryMongoTodo extends MongoTodoDAO implements IDBConnection {
   mongoServer: MongoMemoryServer | undefined;
 
   constructor() {

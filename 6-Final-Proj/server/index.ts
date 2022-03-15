@@ -1,11 +1,11 @@
 import dotenv from "dotenv";
 import { getApp } from "./app"
-import { MongoTodoService } from "./services/todo_service"
+import { AtlasMongoTodo} from "./services/todo_atlas"
 
 dotenv.config();
 const port = process.env.PORT || 3000;
 
-const mongodbTodoService = new MongoTodoService();
+const mongodbTodoService = new AtlasMongoTodo();
 const app = getApp(mongodbTodoService);
 
 app.listen(port, () => {

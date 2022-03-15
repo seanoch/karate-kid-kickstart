@@ -1,17 +1,17 @@
 import { Testkit } from "./testkit";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { TodoItem } from "../../common/types";
-import { getRandomItem, getRandomUserId, getRandomPartialItem } from "./utils";
+import { aRandomItem, aUserId, aRandomPartialItem } from "./utils";
 
 const testkit = new Testkit();
 
-describe("PUT /todos", () => {
+describe("On PUT /todos", () => {
   testkit.beforeAndAfterEach();
 
-  it("When the item exists, \
-    it should return 200 and the item should be updated", async () => {
-    const userId = getRandomUserId();
-    const todo1: TodoItem = getRandomItem();
+  it("should return 200 and the item should be updated \
+  when the item exists", async () => {
+    const userId = aUserId();
+    const todo1: TodoItem = aRandomItem({});
 
     await testkit.dbDriver?.createItem(userId, todo1);
 
@@ -27,10 +27,10 @@ describe("PUT /todos", () => {
     expect(allItems ? allItems[0].check : undefined).toBe(todo1.check);
   });
 
-  it("When the item doesn't exist, \
-    it should return 400 and the item shouldn't be added to the DB", async () => {
-    const userId = getRandomUserId();
-    const todo1: TodoItem = getRandomItem();
+  it("should return 400 and the item shouldn't be added to the DB \
+  when the item doesn't exist", async () => {
+    const userId = aUserId();
+    const todo1: TodoItem = aRandomItem({});
     let thrownError: AxiosError | undefined;
 
     testkit.appDriver?.setUserId(userId);

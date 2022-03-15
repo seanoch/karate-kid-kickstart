@@ -1,23 +1,21 @@
 import { v4 as uuid } from "uuid";
 import { TodoItem } from "../../common/types";
 
-export const getRandomItem = () : TodoItem => {
-    const todo: TodoItem = { 
-        id: uuid(), 
-        text: "hi", 
-        check: true
+export const aRandomItem = (todo: Partial<TodoItem>) : TodoItem => {
+    const {id, text, check} = todo;
+    return { 
+        id: id ? id : uuid(), 
+        text: text ? text : uuid(), 
+        check: check ? check : Math.random() < 0.5
     };
-
-    return todo;
 }
 
-export const getRandomPartialItem = () : Partial<TodoItem> => {
+export const aRandomPartialItem = () : Partial<TodoItem> => {
     const todo: Partial<TodoItem> = { 
         id: uuid(), 
-        check: true
     };
 
     return todo;
 }
 
-export const getRandomUserId = () : string => uuid();
+export const aUserId = () : string => uuid();

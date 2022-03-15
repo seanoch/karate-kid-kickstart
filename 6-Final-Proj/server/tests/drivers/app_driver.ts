@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export class AppDriver {
-  SERVER_URL: string = process.env.TODO_SERVER_URL || "";
+  SERVER_URL: string = process.env.TODO_SERVER_URL || "http://localhost";
   TODOS_ENDPOINT = "todos";
   SERVER_PORT: string;
   fullUrl: string;

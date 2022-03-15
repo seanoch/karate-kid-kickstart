@@ -1,10 +1,10 @@
 import mongoose, { Schema, Model } from "mongoose";
 import { IDBConnection } from "../types";
-import { MongoTodoModel } from "./todo_model";
+import { MongoTodoDAO } from "./todo_dao";
 import dotenv from "dotenv";
 
 dotenv.config();
-export class MongoTodoService extends MongoTodoModel implements IDBConnection {
+export class AtlasMongoTodo extends MongoTodoDAO implements IDBConnection {
   MAX_CONNECTION_ATTEMPTS: number = 2;
   CONNECTION_ATTEMPTS_INTERVAL: number = 5000;
   mongoURI: string;

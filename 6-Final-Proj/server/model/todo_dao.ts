@@ -1,7 +1,9 @@
 import mongoose, { Schema, Model } from "mongoose";
-import { ITodoModel, ValidationError, DuplicateKeyError } from "../types";
-import { TodoItem, guid } from "../../common/types";
+import { ITodoDAO, ValidationError, DuplicateKeyError } from "../types";
+import { TodoItem, guid, UserID } from "../../common/types";
 import { MongoError } from "mongodb";
+
+const ASCENDING_INDEX = 1;
 
 interface TodoItemDBEntry extends TodoItem {
   userId: guid;
@@ -13,7 +15,8 @@ const TodoSchema = new Schema<TodoItemDBEntry>({
   text: { type: String, required: true },
   check: { type: Boolean, required: true },
 });
-export class MongoTodoModel implements ITodoModel {
+
+export class MongoTodoDAO implements ITodoDAO {
   model: Model<TodoItemDBEntry>;
 
   constructor() {
@@ -21,10 +24,13 @@ export class MongoTodoModel implements ITodoModel {
   }
 
   createIndex() {
-    this.model.collection.createIndex({ userId: 1, id: 1 }, { unique: true });
+    this.model.collection.createIndex(
+      { userId: ASCENDING_INDEX, id: ASCENDING_INDEX },
+      { unique: true }
+    );
   }
 
-  getItems(userId: guid): Promise<Array<TodoItem>> {
+  getItems(userId: UserID): Promise<Array<TodoItem>> {
     const query = { userId };
 
     return this.model
@@ -34,10 +40,11 @@ export class MongoTodoModel implements ITodoModel {
         let items: Array<TodoItem> = [];
 
         items = docs.map(function (doc) {
+          const { id, text, check } = doc;
           return {
-            id: doc.id,
-            text: doc.text,
-            check: doc.check,
+            id,
+            text,
+            check,
           };
         });
 
@@ -45,18 +52,19 @@ export class MongoTodoModel implements ITodoModel {
       });
   }
 
-  createItem(userId: guid, item: TodoItem): Promise<boolean | void> {
+  createItem(userId: UserID, item: TodoItem): Promise<boolean> {
+    const { id, text, check } = item;
     const itemDBEntry: TodoItemDBEntry = {
-      userId: userId,
-      id: item.id,
-      text: item.text,
-      check: item.check,
+      userId,
+      id,
+      text,
+      check,
     };
     const dbTodoItem = new this.model(itemDBEntry);
 
     return dbTodoItem
       .save()
-      .then((docs) => true)
+      .then(() => true)
       .catch((error) => {
         if (error instanceof mongoose.Error.ValidationError) {
           const messages: Array<string> = Object.values(error.errors).map(
@@ -71,14 +79,15 @@ export class MongoTodoModel implements ITodoModel {
       });
   }
 
-  editItem(userId: guid, item: TodoItem): Promise<boolean> {
+  editItem(userId: UserID, item: TodoItem): Promise<boolean> {
+    const { id, text, check } = item;
     const itemDBEntry: TodoItemDBEntry = {
-      userId: userId,
-      id: item.id,
-      text: item.text,
-      check: item.check,
+      userId,
+      id,
+      text,
+      check,
     };
-    const query = { userId: userId, id: item.id };
+    const query = { userId, id };
 
     return this.model
       .findOneAndUpdate(query, itemDBEntry)
@@ -86,7 +95,7 @@ export class MongoTodoModel implements ITodoModel {
       .then((docs) => docs != null);
   }
 
-  deleteItem(userId: guid, itemId: guid): Promise<boolean> {
+  deleteItem(userId: UserID, itemId: guid): Promise<boolean> {
     const query = { userId: userId, id: itemId };
 
     return this.model

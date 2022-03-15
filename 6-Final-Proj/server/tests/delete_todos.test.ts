@@ -2,17 +2,17 @@ import { Testkit } from "./testkit";
 import { AxiosResponse, AxiosError } from "axios";
 import axios from "axios";
 import { TodoItem } from "../../common/types";
-import { getRandomItem, getRandomUserId } from "./utils";
+import { aRandomItem, aUserId } from "./utils";
 
 const testkit = new Testkit();
 
-describe("DELETE /todos", () => {
+describe("On DELETE /todos", () => {
   testkit.beforeAndAfterEach();
 
-  it("When the item exists, \
-  it should return 200 and the item should be deleted", async () => {
-    const userId = getRandomUserId();
-    const todo1: TodoItem = getRandomItem();
+  it("should return 200 and the item should be deleted\
+   when the item exists", async () => {
+    const userId = aUserId();
+    const todo1: TodoItem = aRandomItem({});
 
     await testkit.dbDriver?.createItem(userId, todo1);
 
@@ -27,10 +27,9 @@ describe("DELETE /todos", () => {
     expect(allItems?.length).toBe(0);
   });
 
-  it("When the item doesn't exist, \
-  it should return 400 and the item shouldn't be added to the DB", async () => {
-    const userId = getRandomUserId();
-    const todo1: TodoItem = getRandomItem();
+  it("should return 400 when the item doesn't exist", async () => {
+    const userId = aUserId();
+    const todo1: TodoItem = aRandomItem({});
 
     let thrownError: AxiosError | undefined;
 

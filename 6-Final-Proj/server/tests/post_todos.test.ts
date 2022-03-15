@@ -1,17 +1,17 @@
 import { Testkit } from "./testkit";
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { TodoItem } from "../../common/types";
-import { getRandomItem, getRandomUserId, getRandomPartialItem } from "./utils";
+import { aRandomItem, aUserId, aRandomPartialItem } from "./utils";
 
 const testkit = new Testkit();
 
-describe("POST /todos", () => {
+describe("On POST /todos", () => {
   testkit.beforeAndAfterEach();
 
-  it("When creating a new item, \
-    it should return 201 and the item should be added to the DB", async () => {
-    const userId = getRandomUserId();
-    const todo1: TodoItem = getRandomItem();
+  it("should return 201 and the item should be added to the DB \
+  when it's a new item", async () => {
+    const userId = aUserId();
+    const todo1: TodoItem = aRandomItem({});
 
     testkit.appDriver?.setUserId(userId);
 
@@ -24,10 +24,10 @@ describe("POST /todos", () => {
     expect(allItems).toContainEqual(todo1);
   });
 
-  it("When creating an item with an ID that already exists for that user, \
-    it should return 400 with a DuplicateKeyError", async () => {
-    const userId = getRandomUserId();
-    const todo1: TodoItem = getRandomItem();
+  it("should return 400 with a DuplicateKeyError \
+  when item with such ID already exists for that user", async () => {
+    const userId = aUserId();
+    const todo1: TodoItem = aRandomItem({});
     let thrownError: AxiosError | undefined;
 
     await testkit.dbDriver?.createItem(userId, todo1);
@@ -49,10 +49,10 @@ describe("POST /todos", () => {
     expect(allItems?.length).toBe(1);
   });
 
-  it("When creating an item with a missing property, \
-    it should return 400 with a ValidationError", async () => {
-    const userId = getRandomUserId();
-    const todo1: Partial<TodoItem> = getRandomPartialItem();
+  it("should return 400 with a ValidationError \
+  when creating an item with a missing property", async () => {
+    const userId = aUserId();
+    const todo1: Partial<TodoItem> = aRandomPartialItem();
     let thrownError: AxiosError | undefined;
 
     testkit.appDriver?.setUserId(userId);
@@ -67,7 +67,6 @@ describe("POST /todos", () => {
     }
 
     expect(thrownError?.response?.status).toBe(400);
-    console.log(thrownError?.response?.data);
     expect(thrownError?.response?.data?.name).toBe("ValidationError");
     const allItems = await testkit.dbDriver?.getItems(userId);
     expect(allItems?.length).toBe(0);
