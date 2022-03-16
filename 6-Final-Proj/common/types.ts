@@ -1,5 +1,5 @@
 export type guid = string;
-export type UserID = string;
+export type UserID = guid;
 
 export interface TodoItem {
     id: guid;

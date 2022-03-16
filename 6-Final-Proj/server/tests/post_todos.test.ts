@@ -1,7 +1,7 @@
 import { Testkit } from "./testkit";
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { TodoItem } from "../../common/types";
-import { aRandomItem, aUserId, aRandomPartialItem } from "./utils";
+import { aRandomItem, aUserId } from "./utils";
 
 const testkit = new Testkit();
 
@@ -11,7 +11,7 @@ describe("On POST /todos", () => {
   it("should return 201 and the item should be added to the DB \
   when it's a new item", async () => {
     const userId = aUserId();
-    const todo1: TodoItem = aRandomItem({});
+    const todo1: TodoItem = aRandomItem();
 
     testkit.appDriver?.setUserId(userId);
 
@@ -27,7 +27,7 @@ describe("On POST /todos", () => {
   it("should return 400 with a DuplicateKeyError \
   when item with such ID already exists for that user", async () => {
     const userId = aUserId();
-    const todo1: TodoItem = aRandomItem({});
+    const todo1: TodoItem = aRandomItem();
     let thrownError: AxiosError | undefined;
 
     await testkit.dbDriver?.createItem(userId, todo1);
@@ -52,8 +52,10 @@ describe("On POST /todos", () => {
   it("should return 400 with a ValidationError \
   when creating an item with a missing property", async () => {
     const userId = aUserId();
-    const todo1: Partial<TodoItem> = aRandomPartialItem();
+    const todo1: Partial<TodoItem> = aRandomItem();
     let thrownError: AxiosError | undefined;
+
+    delete todo1.text;
 
     testkit.appDriver?.setUserId(userId);
 

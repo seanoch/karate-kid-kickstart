@@ -12,7 +12,7 @@ describe("On DELETE /todos", () => {
   it("should return 200 and the item should be deleted\
    when the item exists", async () => {
     const userId = aUserId();
-    const todo1: TodoItem = aRandomItem({});
+    const todo1: TodoItem = aRandomItem();
 
     await testkit.dbDriver?.createItem(userId, todo1);
 
@@ -29,7 +29,7 @@ describe("On DELETE /todos", () => {
 
   it("should return 400 when the item doesn't exist", async () => {
     const userId = aUserId();
-    const todo1: TodoItem = aRandomItem({});
+    const todo1: TodoItem = aRandomItem();
 
     let thrownError: AxiosError | undefined;
 

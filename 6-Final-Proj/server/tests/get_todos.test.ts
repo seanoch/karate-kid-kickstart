@@ -20,9 +20,9 @@ describe("On GET /todos", () => {
     const userId1 = aUserId();
     const userId2 = aUserId();
 
-    const todo1: TodoItem = aRandomItem({});
-    const todo2: TodoItem = aRandomItem({});
-    const todo3: TodoItem = aRandomItem({});
+    const todo1: TodoItem = aRandomItem();
+    const todo2: TodoItem = aRandomItem();
+    const todo3: TodoItem = aRandomItem();
 
     await testkit.dbDriver?.createItem(userId1, todo1);
     await testkit.dbDriver?.createItem(userId1, todo2);

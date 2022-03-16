@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
-import { getApp } from "./app"
-import { AtlasMongoTodo} from "./services/todo_atlas"
+import { getApp } from "./app";
+import { AtlasMongoTodo } from "./model/todo_atlas";
 
 dotenv.config();
 const port = process.env.PORT || 3000;

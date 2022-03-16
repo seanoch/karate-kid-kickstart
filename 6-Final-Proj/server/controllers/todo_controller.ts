@@ -12,7 +12,7 @@ export class TodoController {
   };
 
   createItem = (
-    req: Request<{}, any, TodoItem>,
+    req: Request<{}, void | Error, TodoItem>,
     res: Response<void | Error>
   ) => {
     const item: TodoItem = req.body;
