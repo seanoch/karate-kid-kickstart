@@ -1,8 +1,8 @@
-export type guid = string;
-export type UserID = guid;
-
-export interface TodoItem {
-    id: guid;
+export interface BaseTodoItem {
+    id: string;
     text: string;
     check: boolean;
+  }
+export interface TodoItem extends BaseTodoItem {
+    userId: string;
   }
