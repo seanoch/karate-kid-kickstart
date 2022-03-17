@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BaseTodoItem as ServerTodoItem } from "../../common/types";
+import { TodoItem as ServerTodoItem } from "../../common/types";
 const TODOS_ENDPOINT = "todos";
 
 function createItemData(item : ServerTodoItem) : Promise<void> {

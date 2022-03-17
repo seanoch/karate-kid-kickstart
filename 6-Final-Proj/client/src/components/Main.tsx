@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from "react";
 import { ITodoItemData } from "../types";
-import { BaseTodoItem as ServerTodoItem } from "../../../common/types";
+import { TodoItem as ServerTodoItem } from "../../../common/types";
 import { TodoItem } from "./TodoItem";
 import { AddTodoItem } from "./AddTodoItem";
 import {
