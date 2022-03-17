@@ -2,6 +2,7 @@ import { InMemoryMongoTodo, AppDriver } from "./drivers/index";
 import { getApp } from "../app";
 import express from "express";
 import { Server } from "http";
+import { AddressInfo } from "net";
 
 export class Testkit {
   app?: express.Application;
@@ -10,12 +11,17 @@ export class Testkit {
   server?: Server;
 
   beforeEach = async () => {
-    const port = Math.ceil(Math.random() * 10000 + 1000);
     this.dbDriver = new InMemoryMongoTodo();
     this.app = getApp(this.dbDriver);
+    this.server = await this.app.listen(0);
+
+    if (this.server) {
+      const { port } = this.server.address() as AddressInfo;
+      console.log(`listening on ${port}`);
+
     this.appDriver = new AppDriver(String(port));
-    this.server = await this.app.listen(port);
     await this.dbDriver.setup();
+    }
   };
 
   afterEach = async () => {
