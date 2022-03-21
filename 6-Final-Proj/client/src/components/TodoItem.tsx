@@ -11,8 +11,8 @@ import { TodoEditor } from "./TodoEditor";
 
 interface ITodoItem {
   todo: ITodoItemData;
-  removeFromDomAndServer(todo: ITodoItemData, updateServer: boolean): void;
-  updateDomAndServer(todo: ITodoItemData, updateServer: boolean): void;
+  removeFromDomAndServer(todo: ITodoItemData, updateServer: boolean): Promise<boolean>;
+  updateDomAndServer(todo: ITodoItemData, updateServer: boolean): Promise<boolean>;
 }
 
 export const TodoItem: FC<ITodoItem> = ({ todo, removeFromDomAndServer, updateDomAndServer }) => {

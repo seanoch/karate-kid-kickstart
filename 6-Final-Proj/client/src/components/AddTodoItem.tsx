@@ -5,7 +5,7 @@ import { classes } from "../style_jss";
 import { v4 as uuidv4 } from "uuid";
 
 interface IAddTodoItem {
-  addToDomAndServer(todo: ITodoItemData): void;
+  addToDomAndServer(todo: ITodoItemData): Promise<boolean>;
 }
 
 export const AddTodoItem: FC<IAddTodoItem> = ({ addToDomAndServer }) => {
@@ -15,20 +15,18 @@ export const AddTodoItem: FC<IAddTodoItem> = ({ addToDomAndServer }) => {
     setText(e.target.value);
   };
 
-  const addItem = () => {
-    if (text.length > 0) {
-      const uniqueId: string = uuidv4();
-      const todo: ITodoItemData = {
-        id: uniqueId,
-        text: text,
-        check: false,
-        inEditMode: false,
-      };
+  const addItem = async () => {
+    const uniqueId: string = uuidv4();
+    const todo: ITodoItemData = {
+      id: uniqueId,
+      text: text,
+      check: false,
+      inEditMode: false,
+    };
 
-      addToDomAndServer(todo);
+    let success = await addToDomAndServer(todo);
+    if (success) {
       setText("");
-    } else {
-      alert("Invalid item name!");
     }
   };
 

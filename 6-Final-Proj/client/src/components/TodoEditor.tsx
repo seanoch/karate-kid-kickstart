@@ -8,19 +8,15 @@ interface ITodoEditor {
 
 export const TodoEditor: FC<ITodoEditor> = ({ todo, onUpdate }) => {
   const onInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    todo.text = e.target.value;
-    onUpdate(todo, false);
+    const updatedTodo = { ...todo, text: e.target.value };
+    onUpdate(updatedTodo, false);
   };
 
   const onInputEnter: React.KeyboardEventHandler = (e) => {
     if (e.key === "Enter") {
-      if (todo.text.length > 0) {
-        todo.inEditMode = false;
-        onUpdate(todo, true);
-      } else {
-        alert("Invalid item name!");
+        const updatedTodo = { ...todo, inEditMode: false };
+        onUpdate(updatedTodo, true);
       }
-    }
   };
 
   return (

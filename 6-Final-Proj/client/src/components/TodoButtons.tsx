@@ -5,13 +5,13 @@ import { ITodoItemData } from "../types";
 
 interface ITodoButton {
   todo: ITodoItemData;
-  onUpdate(todo: ITodoItemData, updateServer: boolean): void;
+  onUpdate(todo: ITodoItemData, updateServer: boolean): Promise<boolean>;
 }
 
 export const EditButton: FC<ITodoButton> = ({ todo, onUpdate }) => {
   const onEdit: React.MouseEventHandler = (e) => {
-    todo.inEditMode = true;
-    onUpdate(todo, false);
+    const updatedTodo = { ...todo, inEditMode: true };
+    onUpdate(updatedTodo, false);
   };
 
   return (
@@ -40,8 +40,8 @@ export const RemoveButton: FC<ITodoButton> = ({ todo, onUpdate }) => {
 export const CheckButton: FC<ITodoButton> = ({ todo, onUpdate }) => {
   const additionalClasses: Array<string> = [classes.checkBtn];
   const onCheck: React.MouseEventHandler = (e) => {
-    todo.check = !todo.check;
-    onUpdate(todo, true);
+    const updatedTodo = { ...todo, check: !todo.check };
+    onUpdate(updatedTodo, true);
   };
 
   if (todo.check) {
@@ -59,8 +59,8 @@ export const CheckButton: FC<ITodoButton> = ({ todo, onUpdate }) => {
 
 export const ConfirmButton: FC<ITodoButton> = ({ todo, onUpdate }) => {
   const onConfirm: React.MouseEventHandler = (e) => {
-    todo.inEditMode = false;
-    onUpdate(todo, true);
+    const updatedTodo = { ...todo, inEditMode: false };
+    onUpdate(updatedTodo, true);
   };
 
   return (
