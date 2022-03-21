@@ -1,6 +1,5 @@
 import { FC, useState, useEffect } from "react";
-import { ITodoItemData } from "../types";
-import { TodoItem as ServerTodoItem } from "../../../common/types";
+import { TodoItem as TodoItemData, guid } from "../../../common/types";
 import { TodoItem } from "./TodoItem";
 import { AddTodoItem } from "./AddTodoItem";
 import { ErrorModal, ErrorMessage } from "./ErrorModal";
@@ -12,11 +11,10 @@ import {
 } from "../todo_api";
 
 export const Main: FC<{}> = () => {
-  const [todos, setTodos] = useState<ITodoItemData[]>([]);
+  const [todos, setTodos] = useState<TodoItemData[]>([]);
   const [error, setError] = useState<ErrorMessage | null>(null);
 
   const SERVER_ERROR_TITLE = "Server Error";
-  const INVALID_INPUT_ERROR_TITLE = "Invalid Input";
 
   const confirmError: React.MouseEventHandler = (e) => {
     setError(null);
@@ -27,18 +25,10 @@ export const Main: FC<{}> = () => {
   };
 
   const getTodosFromServer = async () => {
-    const fixedTodos: Array<ITodoItemData> = [];
+    let todos: Array<TodoItemData> = [];
 
     try {
-      const todos: Array<ServerTodoItem> = await getItems();
-      todos.forEach((item) =>
-        fixedTodos.push({
-          id: item.id,
-          text: item.text,
-          check: item.check,
-          inEditMode: false,
-        })
-      );
+      todos = await getItems();
     } catch (e) {
       console.log(`error loading items from the server`, e);
       onError(
@@ -47,20 +37,14 @@ export const Main: FC<{}> = () => {
       );
     }
 
-    return fixedTodos;
+    return todos;
   };
 
-  const updateTodoOnServer = async (todo: ITodoItemData) => {
+  const updateTodoOnServer = async (todo: TodoItemData) => {
     let success = false;
 
-    const fixedTodo: ServerTodoItem = {
-      id: todo.id,
-      text: todo.text,
-      check: todo.check,
-    };
-
     try {
-      await editItemData(fixedTodo);
+      await editItemData(todo);
       success = true;
     } catch (e) {
       console.log(`error updating item on the server`, e);
@@ -73,17 +57,11 @@ export const Main: FC<{}> = () => {
     return success;
   };
 
-  const createTodoOnServer = async (todo: ITodoItemData) => {
+  const createTodoOnServer = async (todo: TodoItemData) => {
     let success = false;
 
-    const fixedTodo: ServerTodoItem = {
-      id: todo.id,
-      text: todo.text,
-      check: todo.check,
-    };
-
     try {
-      await createItemData(fixedTodo);
+      await createItemData(todo);
       success = true;
     } catch (e) {
       console.log(`error creating item on the server`, e);
@@ -96,7 +74,7 @@ export const Main: FC<{}> = () => {
     return success;
   };
 
-  const removeTodoFromServer = async (id: string) => {
+  const removeTodoFromServer = async (id: guid) => {
     let success = false;
 
     try {
@@ -122,14 +100,8 @@ export const Main: FC<{}> = () => {
     initTodos();
   }, []);
 
-  const addToDomAndServer = async (todo: ITodoItemData): Promise<boolean> => {
-    let success = false;
-
-    if (todo.text.length > 0) {
-      success = await createTodoOnServer(todo);
-    } else {
-      onError(INVALID_INPUT_ERROR_TITLE, "Todo text cannot be empty.");
-    }
+  const addToDomAndServer = async (todo: TodoItemData): Promise<boolean> => {
+    let success = await createTodoOnServer(todo);
 
     if (success) {
       setTodos((prevTodos) => [...prevTodos, todo]);
@@ -139,18 +111,13 @@ export const Main: FC<{}> = () => {
   };
 
   const removeFromDomAndServer = async (
-    removedTodo: ITodoItemData,
-    updateServer: boolean
+    id: guid
   ): Promise<boolean> => {
-    let success = false;
+    let success = await removeTodoFromServer(id);
 
-    if (updateServer) {
-      success = await removeTodoFromServer(removedTodo.id);
-    }
-
-    if (success || !updateServer) {
+    if (success) {
       setTodos((prevTodos) =>
-        prevTodos.filter((todo) => todo.id !== removedTodo.id)
+        prevTodos.filter((todo) => todo.id !== id)
       );
     }
 
@@ -158,20 +125,11 @@ export const Main: FC<{}> = () => {
   };
 
   const updateDomAndServer = async (
-    updatedTodo: ITodoItemData,
-    updateServer: boolean
+    updatedTodo: TodoItemData
   ): Promise<boolean> => {
-    let success = false;
+    let success = await updateTodoOnServer(updatedTodo);
 
-    if (updateServer) {
-      if (updatedTodo.text.length > 0) {
-        success = await updateTodoOnServer(updatedTodo);
-      } else {
-        onError(INVALID_INPUT_ERROR_TITLE, "Todo text cannot be empty.");
-      }
-    }
-
-    if (success || !updateServer) {
+    if (success) {
       setTodos((prevTodos) =>
         prevTodos.map((todo) =>
           todo.id === updatedTodo.id ? updatedTodo : todo

@@ -74,6 +74,10 @@ input.edit  {
     margin-right: 5px;
 }
 
+input.error  {
+    background-color: var(--light-red);
+}
+
 .btn {
     height: 50px;
     width: 50px;

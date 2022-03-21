@@ -1,21 +1,19 @@
 import { FC } from "react";
-import { ITodoItemData } from "../types";
 
 interface ITodoEditor {
-  todo: ITodoItemData;
-  onUpdate(todo: ITodoItemData, updateServer: boolean): void;
+  text: string;
+  onUpdate(text: string): void;
+  onConfirm(): Promise<void>;
 }
 
-export const TodoEditor: FC<ITodoEditor> = ({ todo, onUpdate }) => {
+export const TodoEditor: FC<ITodoEditor> = ({ text, onUpdate, onConfirm }) => {
   const onInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    const updatedTodo = { ...todo, text: e.target.value };
-    onUpdate(updatedTodo, false);
+    onUpdate(e.target.value);
   };
 
   const onInputEnter: React.KeyboardEventHandler = (e) => {
     if (e.key === "Enter") {
-        const updatedTodo = { ...todo, inEditMode: false };
-        onUpdate(updatedTodo, true);
+        onConfirm();
       }
   };
 
@@ -23,8 +21,8 @@ export const TodoEditor: FC<ITodoEditor> = ({ todo, onUpdate }) => {
     <input
       autoFocus
       type="text"
-      className="edit"
-      value={todo.text}
+      className={"edit" + ( text.length == 0 ? " error" : "")}
+      value={text}
       onChange={onInputChange}
       onKeyPress={onInputEnter}
     />
