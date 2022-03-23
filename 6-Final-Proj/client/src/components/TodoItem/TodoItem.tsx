@@ -1,8 +1,9 @@
 import { FC, useState } from "react";
-import { Button } from "./Button";
-import { TodoItem as TodoItemData, guid } from "../../../common/types";
-import { classes } from "../style_jss";
-import { TodoEditor } from "./TodoEditor";
+import { Button } from "../Button";
+import { TodoItem as TodoItemData, guid } from "../../../../common/types";
+import { classes } from "../../style_jss";
+import { TodoEditor } from "../TodoEditor";
+import hooks from "../../dataHooks";
 
 interface ITodoItem {
   todo: TodoItemData;
@@ -37,6 +38,7 @@ export const TodoItem: FC<ITodoItem> = ({
     if (inputText.length > 0) {
       const updatedTodo = { ...todo, text: inputText };
       await updateDomAndServer(updatedTodo);
+      console.log("status changes");
       setEditMode(false);
     }
   };
@@ -51,7 +53,7 @@ export const TodoItem: FC<ITodoItem> = ({
   };
 
   const todoLabel = (
-    <label className={classes.item} onDoubleClick={onStartEditing}>
+    <label className={classes.item} onDoubleClick={onStartEditing} data-hook={hooks.label}>
       {todo.text}
     </label>
   );
@@ -61,6 +63,7 @@ export const TodoItem: FC<ITodoItem> = ({
       text={inputText}
       onUpdate={onEditUpdate}
       onConfirm={onConfirmEdit}
+      dataHook={hooks.input}
     />
   );
 
@@ -69,6 +72,7 @@ export const TodoItem: FC<ITodoItem> = ({
       icon="&#xe3c9;"
       additionalClasses={[classes.editBtn]}
       onClick={onStartEditing}
+      dataHook={hooks.editBtn}
     ></Button>
   );
 
@@ -77,6 +81,7 @@ export const TodoItem: FC<ITodoItem> = ({
       icon="&#xe14c;"
       additionalClasses={[classes.removeBtn]}
       onClick={onRemoveBtnClick}
+      dataHook={hooks.removeBtn}
     ></Button>
   );
 
@@ -85,6 +90,7 @@ export const TodoItem: FC<ITodoItem> = ({
       icon="&#xe876;"
       additionalClasses={checkBtnClasses}
       onClick={onCheckBtnClick}
+      dataHook={hooks.checkBtn}
     ></Button>
   );
 
@@ -93,6 +99,7 @@ export const TodoItem: FC<ITodoItem> = ({
       icon="&#xe145;"
       additionalClasses={[classes.confirmBtn]}
       onClick={onConfirmEdit}
+      dataHook={hooks.confirmBtn}
     ></Button>
   );
 

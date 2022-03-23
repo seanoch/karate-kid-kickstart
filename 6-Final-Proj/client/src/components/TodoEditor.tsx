@@ -4,9 +4,10 @@ interface ITodoEditor {
   text: string;
   onUpdate(text: string): void;
   onConfirm(): Promise<void>;
+  dataHook: string;
 }
 
-export const TodoEditor: FC<ITodoEditor> = ({ text, onUpdate, onConfirm }) => {
+export const TodoEditor: FC<ITodoEditor> = ({ text, onUpdate, onConfirm, dataHook }) => {
   const onInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     onUpdate(e.target.value);
   };
@@ -25,6 +26,7 @@ export const TodoEditor: FC<ITodoEditor> = ({ text, onUpdate, onConfirm }) => {
       value={text}
       onChange={onInputChange}
       onKeyPress={onInputEnter}
+      data-hook={dataHook}
     />
   );
 };
