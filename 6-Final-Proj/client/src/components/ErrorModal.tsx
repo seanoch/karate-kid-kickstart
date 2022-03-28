@@ -2,13 +2,14 @@ import { FC } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/errors.css";
 import { Button } from "./Button";
+import hooks from "../dataHooks";
 
 export interface ErrorMessage {
-    title: string;
-    message: string;
+  title: string;
+  message: string;
 }
 
-interface IErrorModal {
+interface ErrorModalProps {
   error: ErrorMessage;
   onConfirm: React.MouseEventHandler;
 }
@@ -19,12 +20,16 @@ const Backdrop: FC<{ onConfirm: React.MouseEventHandler }> = ({
   return <div className="backdrop" onClick={onConfirm}></div>;
 };
 
-const ModalOverlay: FC<IErrorModal> = ({ error, onConfirm }) => {
+const ModalOverlay: FC<ErrorModalProps> = ({ error, onConfirm }) => {
   return (
     <div className="modal">
       <div className="modal-header">
         <h2>{error.title}</h2>
-        <Button icon="&#xe14c;" onClick={onConfirm}></Button>
+        <Button
+          icon="&#xe14c;"
+          onClick={onConfirm}
+          dataHook={hooks.closeBtn}
+        ></Button>
       </div>
       <div className="modal-content">
         <p>{error.message}</p>
@@ -33,7 +38,7 @@ const ModalOverlay: FC<IErrorModal> = ({ error, onConfirm }) => {
   );
 };
 
-export const ErrorModal: FC<IErrorModal> = ({ error, onConfirm }) => {
+export const ErrorModal: FC<ErrorModalProps> = ({ error, onConfirm }) => {
   return (
     <>
       {ReactDOM.createPortal(

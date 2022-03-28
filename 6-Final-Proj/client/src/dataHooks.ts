@@ -4,5 +4,7 @@ export default {
     removeBtn: "TodoItem.removeBtn",
     checkBtn: "TodoItem.checkBtn",
     input: "TodoItem.input",
-    label: "TodoItem.label"
+    label: "TodoItem.label",
+    addBtn: "AddTodoItem.addBtn",
+    closeBtn: "ErrorModa.closeBtn",
 }

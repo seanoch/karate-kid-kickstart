@@ -1,11 +1,8 @@
-import { render, screen } from "@testing-library/react";
-import { TodoItem } from "./TodoItem";
 import { TodoItem as TodoItemData } from "../../../../common/types";
 import { aRandomItem } from "../../test/utils"; 
 import { TodoItemDriver } from "./TodoItem.driver";
-import { act } from "react-dom/test-utils";
 
-describe("A todo item is created", () => {
+describe("TodoItem component", () => {
     let driver: TodoItemDriver;
 
     beforeEach(() => {
@@ -15,7 +12,7 @@ describe("A todo item is created", () => {
     it("should display the item's text in a label when rendered", () => {
         const todo: TodoItemData = aRandomItem();
 
-        driver.given.setTodo(todo);
+        driver.given.todo(todo);
         driver.when.render();
 
         expect(driver.get.labelText()).toBe(todo.text);
@@ -24,7 +21,7 @@ describe("A todo item is created", () => {
     it("should display the item's text in an input panel when edit button is clicked", () => {
         const todo: TodoItemData = aRandomItem();
 
-        driver.given.setTodo(todo);
+        driver.given.todo(todo);
         driver.when.render();
         driver.when.editBtnClick();
 
@@ -34,7 +31,7 @@ describe("A todo item is created", () => {
     it("should display the item's text in an input panel when label is double clicked", () => {
         const todo: TodoItemData = aRandomItem();
 
-        driver.given.setTodo(todo);
+        driver.given.todo(todo);
         driver.when.render();
         driver.when.labelDblClick();
 

@@ -1,16 +1,16 @@
 import { FC } from "react";
 
-interface IButton {
+interface ButtonProps {
   icon: string;
-  additionalClasses?: Array<string>;
+  additionalClasses?: string;
   onClick: React.MouseEventHandler;
   dataHook: string;
 }
 
-export const Button: FC<IButton> = ({ icon, additionalClasses, onClick, dataHook }) => {
+export const Button: FC<ButtonProps> = ({ icon, additionalClasses, onClick, dataHook }) => {
   return (
     <div
-      className={`btn ${additionalClasses ? additionalClasses.join(" ") : ""}`}
+      className={`btn ${additionalClasses}`}
       onClick={onClick}
       data-hook={dataHook}
     >

@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from "react";
 import { TodoItem as TodoItemData, guid } from "../../../common/types";
-import { TodoItem } from "./TodoItem";
+import { TodoItem } from "./TodoItem/TodoItem"
 import { AddTodoItem } from "./AddTodoItem";
 import { ErrorModal, ErrorMessage } from "./ErrorModal";
 import {
@@ -144,13 +144,13 @@ export const Main: FC<{}> = () => {
     <>
       {error && <ErrorModal error={error} onConfirm={confirmError} />}
       <div className="main" id="main-container">
-        <AddTodoItem addToDomAndServer={addToDomAndServer} />
+        <AddTodoItem onAdd={addToDomAndServer} />
         {todos.map((todo) => (
           <TodoItem
             key={todo.id}
             todo={todo}
-            removeFromDomAndServer={removeFromDomAndServer}
-            updateDomAndServer={updateDomAndServer}
+            onRemove={removeFromDomAndServer}
+            onUpdate={updateDomAndServer}
           />
         ))}
       </div>

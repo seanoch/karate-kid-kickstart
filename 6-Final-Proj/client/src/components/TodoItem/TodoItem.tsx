@@ -4,30 +4,21 @@ import { TodoItem as TodoItemData, guid } from "../../../../common/types";
 import { classes } from "../../style_jss";
 import { TodoEditor } from "../TodoEditor";
 import hooks from "../../dataHooks";
+import classNames from "classnames";
 
-interface ITodoItem {
+interface TodoItemProps {
   todo: TodoItemData;
-  removeFromDomAndServer(id: guid): Promise<boolean>;
-  updateDomAndServer(todo: TodoItemData): Promise<boolean>;
+  onRemove(id: guid): Promise<boolean>;
+  onUpdate(todo: TodoItemData): Promise<boolean>;
 }
 
-export const TodoItem: FC<ITodoItem> = ({
-  todo,
-  removeFromDomAndServer,
-  updateDomAndServer,
-}) => {
+export const TodoItem: FC<TodoItemProps> = ({ todo, onRemove, onUpdate }) => {
   const [inputText, setInputText] = useState<string>(todo.text);
   const [editMode, setEditMode] = useState<boolean>(false);
-
-  const checkBtnClasses = [classes.checkBtn];
-
-  if (todo.check) {
-    checkBtnClasses.push("checked");
-  }
+  const checkBtnClasses = classNames(classes.checkBtn, { checked: todo.check });
 
   const onStartEditing = () => {
     setEditMode(true);
-    setInputText(todo.text);
   };
 
   const onEditUpdate = (text: string) => {
@@ -37,23 +28,30 @@ export const TodoItem: FC<ITodoItem> = ({
   const onConfirmEdit = async () => {
     if (inputText.length > 0) {
       const updatedTodo = { ...todo, text: inputText };
-      await updateDomAndServer(updatedTodo);
-      console.log("status changes");
+
+      if (!(await onUpdate(updatedTodo))) {
+        setInputText(todo.text);
+      }
+
       setEditMode(false);
     }
   };
 
   const onRemoveBtnClick: React.MouseEventHandler = (e) => {
-    removeFromDomAndServer(todo.id);
+    onRemove(todo.id);
   };
 
   const onCheckBtnClick: React.MouseEventHandler = (e) => {
     const updatedTodo = { ...todo, check: !todo.check };
-    updateDomAndServer(updatedTodo);
+    onUpdate(updatedTodo);
   };
 
   const todoLabel = (
-    <label className={classes.item} onDoubleClick={onStartEditing} data-hook={hooks.label}>
+    <label
+      className={classes.item}
+      onDoubleClick={onStartEditing}
+      data-hook={hooks.label}
+    >
       {todo.text}
     </label>
   );
@@ -70,7 +68,7 @@ export const TodoItem: FC<ITodoItem> = ({
   const editButton = (
     <Button
       icon="&#xe3c9;"
-      additionalClasses={[classes.editBtn]}
+      additionalClasses={classes.editBtn}
       onClick={onStartEditing}
       dataHook={hooks.editBtn}
     ></Button>
@@ -79,7 +77,7 @@ export const TodoItem: FC<ITodoItem> = ({
   const removeButton = (
     <Button
       icon="&#xe14c;"
-      additionalClasses={[classes.removeBtn]}
+      additionalClasses={classes.removeBtn}
       onClick={onRemoveBtnClick}
       dataHook={hooks.removeBtn}
     ></Button>
@@ -97,7 +95,7 @@ export const TodoItem: FC<ITodoItem> = ({
   const confirmButton = (
     <Button
       icon="&#xe145;"
-      additionalClasses={[classes.confirmBtn]}
+      additionalClasses={classes.confirmBtn}
       onClick={onConfirmEdit}
       dataHook={hooks.confirmBtn}
     ></Button>

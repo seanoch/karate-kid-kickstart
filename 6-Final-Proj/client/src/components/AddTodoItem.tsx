@@ -3,12 +3,13 @@ import { Button } from "./Button";
 import { TodoItem as TodoItemData } from "../../../common/types";
 import { classes } from "../style_jss";
 import { v4 as uuidv4 } from "uuid";
+import hooks from "../dataHooks";
 
-interface IAddTodoItem {
-  addToDomAndServer(todo: TodoItemData): Promise<boolean>;
+interface AddTodoItemProps {
+  onAdd(todo: TodoItemData): Promise<boolean>;
 }
 
-export const AddTodoItem: FC<IAddTodoItem> = ({ addToDomAndServer }) => {
+export const AddTodoItem: FC<AddTodoItemProps> = ({ onAdd }) => {
   const [text, setText] = useState<string>("");
 
   const onInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -25,7 +26,7 @@ export const AddTodoItem: FC<IAddTodoItem> = ({ addToDomAndServer }) => {
         check: false,
       };
 
-      let success = await addToDomAndServer(todo);
+      let success = await onAdd(todo);
 
       if (success) {
         setText("");
@@ -54,9 +55,10 @@ export const AddTodoItem: FC<IAddTodoItem> = ({ addToDomAndServer }) => {
         value={text}
       />
       <Button
-        additionalClasses={[classes.addBtn]}
+        additionalClasses={classes.addBtn}
         icon="&#xe145;"
         onClick={onClick}
+        dataHook={hooks.addBtn}
       ></Button>
     </div>
   );
