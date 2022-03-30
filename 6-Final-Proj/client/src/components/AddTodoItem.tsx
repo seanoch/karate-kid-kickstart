@@ -53,9 +53,10 @@ export const AddTodoItem: FC<AddTodoItemProps> = ({ onAdd }) => {
         onChange={onInputChange}
         onKeyPress={onEnter}
         value={text}
+        data-hook={hooks.addInput}
       />
       <Button
-        additionalClasses={classes.addBtn}
+        className={classes.addBtn}
         icon="&#xe145;"
         onClick={onClick}
         dataHook={hooks.addBtn}

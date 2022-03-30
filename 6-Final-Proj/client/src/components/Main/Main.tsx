@@ -1,16 +1,15 @@
 import { FC, useState, useEffect } from "react";
-import { TodoItem as TodoItemData, guid } from "../../../common/types";
-import { TodoItem } from "./TodoItem/TodoItem"
-import { AddTodoItem } from "./AddTodoItem";
-import { ErrorModal, ErrorMessage } from "./ErrorModal";
-import {
-  createItemData,
-  editItemData,
-  removeItemData,
-  getItems,
-} from "../todo_api";
+import { TodoItem as TodoItemData, guid } from "../../../../common/types";
+import { TodoItem } from "../TodoItem/TodoItem"
+import { AddTodoItem } from "../AddTodoItem";
+import { ErrorModal, ErrorMessage } from "../ErrorModal";
+import { TodoApi } from "../../types";
 
-export const Main: FC<{}> = () => {
+interface MainProps {
+  todoApi: TodoApi;
+}
+
+export const Main: FC<MainProps> = ({ todoApi }) => {
   const [todos, setTodos] = useState<TodoItemData[]>([]);
   const [error, setError] = useState<ErrorMessage | null>(null);
 
@@ -21,14 +20,14 @@ export const Main: FC<{}> = () => {
   };
 
   const onError = (title: string, message: string) => {
-    setError({ message, title });
+    setError({ title, message });
   };
 
   const getTodosFromServer = async () => {
     let todos: Array<TodoItemData> = [];
 
     try {
-      todos = await getItems();
+      todos = await todoApi.getItems();
     } catch (e) {
       console.log(`error loading items from the server`, e);
       onError(
@@ -44,7 +43,7 @@ export const Main: FC<{}> = () => {
     let success = false;
 
     try {
-      await editItemData(todo);
+      await todoApi.editItemData(todo);
       success = true;
     } catch (e) {
       console.log(`error updating item on the server`, e);
@@ -61,7 +60,7 @@ export const Main: FC<{}> = () => {
     let success = false;
 
     try {
-      await createItemData(todo);
+      await todoApi.createItemData(todo);
       success = true;
     } catch (e) {
       console.log(`error creating item on the server`, e);
@@ -78,7 +77,7 @@ export const Main: FC<{}> = () => {
     let success = false;
 
     try {
-      await removeItemData(id);
+      await todoApi.removeItemData(id);
       success = true;
     } catch (e) {
       console.log(`error removing item on the server`, e);

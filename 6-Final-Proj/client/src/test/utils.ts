@@ -10,3 +10,5 @@ export const aRandomItem = (todo?: Partial<TodoItemData>) : TodoItemData => {
       ...todo
     };
 };
+
+export const aRandomItemText = () : string => chance.sentence();

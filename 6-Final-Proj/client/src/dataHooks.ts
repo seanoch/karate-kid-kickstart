@@ -6,5 +6,6 @@ export default {
     input: "TodoItem.input",
     label: "TodoItem.label",
     addBtn: "AddTodoItem.addBtn",
+    addInput: "AddTodoItem.input",
     closeBtn: "ErrorModa.closeBtn",
 }

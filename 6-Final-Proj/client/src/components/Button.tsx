@@ -2,15 +2,15 @@ import { FC } from "react";
 
 interface ButtonProps {
   icon: string;
-  additionalClasses?: string;
+  className?: string;
   onClick: React.MouseEventHandler;
   dataHook: string;
 }
 
-export const Button: FC<ButtonProps> = ({ icon, additionalClasses, onClick, dataHook }) => {
+export const Button: FC<ButtonProps> = ({ icon, className, onClick, dataHook }) => {
   return (
     <div
-      className={`btn ${additionalClasses}`}
+      className={`btn ${className}`}
       onClick={onClick}
       data-hook={dataHook}
     >

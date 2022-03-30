@@ -68,7 +68,7 @@ export const TodoItem: FC<TodoItemProps> = ({ todo, onRemove, onUpdate }) => {
   const editButton = (
     <Button
       icon="&#xe3c9;"
-      additionalClasses={classes.editBtn}
+      className={classes.editBtn}
       onClick={onStartEditing}
       dataHook={hooks.editBtn}
     ></Button>
@@ -77,7 +77,7 @@ export const TodoItem: FC<TodoItemProps> = ({ todo, onRemove, onUpdate }) => {
   const removeButton = (
     <Button
       icon="&#xe14c;"
-      additionalClasses={classes.removeBtn}
+      className={classes.removeBtn}
       onClick={onRemoveBtnClick}
       dataHook={hooks.removeBtn}
     ></Button>
@@ -86,7 +86,7 @@ export const TodoItem: FC<TodoItemProps> = ({ todo, onRemove, onUpdate }) => {
   const checkButton = (
     <Button
       icon="&#xe876;"
-      additionalClasses={checkBtnClasses}
+      className={checkBtnClasses}
       onClick={onCheckBtnClick}
       dataHook={hooks.checkBtn}
     ></Button>
@@ -95,14 +95,14 @@ export const TodoItem: FC<TodoItemProps> = ({ todo, onRemove, onUpdate }) => {
   const confirmButton = (
     <Button
       icon="&#xe145;"
-      additionalClasses={classes.confirmBtn}
+      className={classes.confirmBtn}
       onClick={onConfirmEdit}
       dataHook={hooks.confirmBtn}
     ></Button>
   );
 
   return (
-    <div className="bar item-bar">
+    <div className="bar item-bar" data-hook={todo.id}>
       {checkButton}
       {editMode ? todoEditor : todoLabel}
       {editMode ? confirmButton : editButton}
