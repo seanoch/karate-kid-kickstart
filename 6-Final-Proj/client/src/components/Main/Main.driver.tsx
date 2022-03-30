@@ -1,23 +1,24 @@
 import { Main } from "./Main";
-import { render, fireEvent } from "@testing-library/react";
+import { render, fireEvent, within } from "@testing-library/react";
 import { guid, TodoItem as TodoItemData } from "../../../../common/types";
-import { RenderResult } from "@testing-library/react";
 import { MockTodoApi } from "./todo_api_mock";
 import hooks from "../../dataHooks";
+import { TodoItemDriver } from "../TodoItem/TodoItem.driver";
+import { RenderApi } from "../../types";
 
 export class MainDriver {
   private todoApi?: MockTodoApi;
   private todos: Array<TodoItemData> = [];
-  protected wrapper?: RenderResult;
+  protected wrapper?: RenderApi;
 
-  private getElementFromDataHookAndId(hook: string, id: guid) {
+  private getItemDriver(id: guid) {
     if (!this.wrapper) {
       throw new Error("Component must be rendered before accessed!");
     }
 
-    return this.wrapper
-      .getByTestId(id)
-      .querySelector(`[data-hook='${hook}']`) as Element;
+    const a = within(this.wrapper.getByTestId(id));
+
+    return new TodoItemDriver(within(this.wrapper.getByTestId(id)));
   }
 
   private getAllElementsFromDataHook(hook: string) {
@@ -28,18 +29,6 @@ export class MainDriver {
     return this.wrapper.getAllByTestId(hook);
   }
 
-  private editBtn = (id: guid) =>
-    this.getElementFromDataHookAndId(hooks.editBtn, id);
-  private removeBtn = (id: guid) =>
-    this.getElementFromDataHookAndId(hooks.removeBtn, id);
-  private checkBtn = (id: guid) =>
-    this.getElementFromDataHookAndId(hooks.checkBtn, id);
-  private confirmBtn = (id: guid) =>
-    this.getElementFromDataHookAndId(hooks.confirmBtn, id);
-  private label = (id: guid) =>
-    this.getElementFromDataHookAndId(hooks.label, id);
-  private editInput = (id: guid) =>
-    this.getElementFromDataHookAndId(hooks.input, id) as HTMLInputElement;
   private addBtn = () => this.getAllElementsFromDataHook(hooks.addBtn)[0];
   private addInput = () => this.getAllElementsFromDataHook(hooks.addInput)[0];
 
@@ -53,19 +42,35 @@ export class MainDriver {
     render: () => {
       this.todoApi = new MockTodoApi(this.todos);
       this.wrapper = render(<Main todoApi={this.todoApi}></Main>);
-
       return this;
     },
     addBtnClick: () => fireEvent.click(this.addBtn()),
-    editBtnClick: (id: guid) => fireEvent.click(this.editBtn(id)),
-    removeBtnClick: (id: guid) => fireEvent.click(this.removeBtn(id)),
-    confirmBtnClick: (id: guid) => fireEvent.click(this.confirmBtn(id)),
-    checkBtnClick: (id: guid) => fireEvent.click(this.checkBtn(id)),
-    labelDblClick: (id: guid) => fireEvent.dblClick(this.label(id)),
-    setEditInputText: (id: guid, text: string) =>
-      fireEvent.change(this.editInput(id), { target: { value: text } }),
     setAddInputText: (text: string) =>
       fireEvent.change(this.addInput(), { target: { value: text } }),
+    editBtnClick: (id: guid) => {
+      const itemDriver = this.getItemDriver(id);
+      return itemDriver.when.editBtnClick();
+    },
+    removeBtnClick: (id: guid) => {
+      const itemDriver = this.getItemDriver(id);
+      return itemDriver.when.removeBtnClick();
+    },
+    confirmBtnClick: (id: guid) => {
+      const itemDriver = this.getItemDriver(id);
+      return itemDriver.when.confirmBtnClick();
+    },
+    checkBtnClick: (id: guid) => {
+      const itemDriver = this.getItemDriver(id);
+      return itemDriver.when.checkBtnClick();
+    },
+    labelDblClick: (id: guid) => {
+      const itemDriver = this.getItemDriver(id);
+      return itemDriver.when.labelDblClick();
+    },
+    setEditInputText: (id: guid, text: string) => {
+      const itemDriver = this.getItemDriver(id);
+      return itemDriver.when.setInputText(text);
+    },
   };
 
   get = {
@@ -77,13 +82,11 @@ export class MainDriver {
     },
     doesItemExist: (item: TodoItemData) => {
       if (this.wrapper?.queryByTestId(item.id)) {
-        const label = this.label(item.id);
-        const checkBtn = this.checkBtn(item.id);
+        const itemDriver = this.getItemDriver(item.id);
+        const labelText = itemDriver.get.labelText();
+        const isChecked = itemDriver.get.isChecked();
 
-        return (
-          label.innerHTML === item.text &&
-          checkBtn.classList.contains("checked") === item.check
-        );
+        return labelText === item.text && isChecked === item.check;
       }
 
       return false;

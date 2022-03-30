@@ -2,14 +2,18 @@ import { TodoItem } from "./TodoItem";
 import { render, fireEvent } from "@testing-library/react";
 import { TodoItem as TodoItemData } from "../../../../common/types";
 import { aRandomItem } from "../../test/utils";
-import { RenderResult } from "@testing-library/react";
+import { RenderApi } from "../../types";
 import hooks from "../../dataHooks";
 
 export class TodoItemDriver {
   private removeCallback: jest.Mock = jest.fn();
   private updateCallback: jest.Mock = jest.fn();
   private todo: TodoItemData = aRandomItem();
-  protected wrapper?: RenderResult;
+  protected wrapper?: RenderApi;
+
+  constructor(wrapper?: RenderApi) {
+    this.wrapper = wrapper;
+  }
 
   private getElementFromDataHook(hook: string) {
     if (!this.wrapper) {
@@ -24,7 +28,8 @@ export class TodoItemDriver {
   private checkBtn = () => this.getElementFromDataHook(hooks.checkBtn);
   private confirmBtn = () => this.getElementFromDataHook(hooks.confirmBtn);
   private label = () => this.getElementFromDataHook(hooks.label);
-  private input = () => this.getElementFromDataHook(hooks.input) as HTMLInputElement;
+  private input = () =>
+    this.getElementFromDataHook(hooks.input) as HTMLInputElement;
 
   given = {
     todo: (todo: Partial<TodoItemData>) => {
@@ -61,6 +66,7 @@ export class TodoItemDriver {
     updateCallback: () => this.updateCallback,
     labelText: () => this.label().textContent,
     inputText: () => this.input().value,
+    isChecked: () => this.checkBtn().classList.contains("checked"),
     isBadInputDisplayed: () => this.input().classList.contains("error"),
   };
 }
