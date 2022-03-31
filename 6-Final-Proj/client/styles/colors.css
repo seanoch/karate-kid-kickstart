@@ -1,0 +1,14 @@
+:root {
+    --logo-blue: #0b79a5;
+    --background-blue: #e5f6fd;
+    --hover-blue: #d7f2fd;
+    --shadow-blue: #085b7c;
+    --dark-green: rgb(48, 78, 58);
+    --light-green: rgb(150, 202, 167);
+    --dark-red: rgb(78, 25, 23);
+    --light-red: rgb(245, 213, 212);
+    --dark-yellow: rgb(104, 89, 2);
+    --light-yellow: rgb(194, 173, 53);
+    --dark-gray: #505050;
+    --light-gray: #b3b3b3;
+  }
