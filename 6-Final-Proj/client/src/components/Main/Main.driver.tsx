@@ -11,16 +11,6 @@ export class MainDriver {
   private todos: Array<TodoItemData> = [];
   protected wrapper?: RenderApi;
 
-  private getItemDriver(id: guid) {
-    if (!this.wrapper) {
-      throw new Error("Component must be rendered before accessed!");
-    }
-
-    const a = within(this.wrapper.getByTestId(id));
-
-    return new TodoItemDriver(within(this.wrapper.getByTestId(id)));
-  }
-
   private getAllElementsFromDataHook(hook: string) {
     if (!this.wrapper) {
       throw new Error("Component must be rendered before accessed!");
@@ -47,33 +37,16 @@ export class MainDriver {
     addBtnClick: () => fireEvent.click(this.addBtn()),
     setAddInputText: (text: string) =>
       fireEvent.change(this.addInput(), { target: { value: text } }),
-    editBtnClick: (id: guid) => {
-      const itemDriver = this.getItemDriver(id);
-      return itemDriver.when.editBtnClick();
-    },
-    removeBtnClick: (id: guid) => {
-      const itemDriver = this.getItemDriver(id);
-      return itemDriver.when.removeBtnClick();
-    },
-    confirmBtnClick: (id: guid) => {
-      const itemDriver = this.getItemDriver(id);
-      return itemDriver.when.confirmBtnClick();
-    },
-    checkBtnClick: (id: guid) => {
-      const itemDriver = this.getItemDriver(id);
-      return itemDriver.when.checkBtnClick();
-    },
-    labelDblClick: (id: guid) => {
-      const itemDriver = this.getItemDriver(id);
-      return itemDriver.when.labelDblClick();
-    },
-    setEditInputText: (id: guid, text: string) => {
-      const itemDriver = this.getItemDriver(id);
-      return itemDriver.when.setInputText(text);
-    },
   };
 
   get = {
+    item: (id: guid) => {
+      if (!this.wrapper) {
+        throw new Error("Component must be rendered before accessed!");
+      }
+  
+      return new TodoItemDriver(within(this.wrapper.getByTestId(id)));
+    },
     doesTextExist: (text: string) => {
       const elements = this.getAllElementsFromDataHook(hooks.label);
       return (
@@ -82,7 +55,7 @@ export class MainDriver {
     },
     doesItemExist: (item: TodoItemData) => {
       if (this.wrapper?.queryByTestId(item.id)) {
-        const itemDriver = this.getItemDriver(item.id);
+        const itemDriver = this.get.item(item.id);
         const labelText = itemDriver.get.labelText();
         const isChecked = itemDriver.get.isChecked();
 

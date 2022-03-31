@@ -23,20 +23,27 @@ describe("Main component", () => {
   });
 
   it("should remove an item when its remove button is clicked", async () => {
-    const item = aRandomItem();
-    const existingTodos = [item];
+    const item1 = aRandomItem();
+    const item2 = aRandomItem();
+    const item3 = aRandomItem();
+    const existingTodos = [item1, item2, item3];
 
     driver.given.todos(existingTodos);
     driver.when.render();
 
     await waitFor(() => {
-      expect(driver.get.doesItemExist(item)).toBe(true);
+      expect(driver.get.doesItemExist(item1)).toBe(true);
+      expect(driver.get.doesItemExist(item2)).toBe(true);
+      expect(driver.get.doesItemExist(item3)).toBe(true);
     });
 
-    driver.when.removeBtnClick(item.id);
+    const itemDriver = driver.get.item(item1.id);
+    itemDriver.when.removeBtnClick();
 
     await waitFor(() => {
-      expect(driver.get.doesItemExist(item)).toBe(false);
+      expect(driver.get.doesItemExist(item1)).toBe(false);
+      expect(driver.get.doesItemExist(item2)).toBe(true);
+      expect(driver.get.doesItemExist(item3)).toBe(true);
     });
   });
 
@@ -53,9 +60,10 @@ describe("Main component", () => {
 
     item.text = aRandomItemText();
 
-    driver.when.editBtnClick(item.id);
-    driver.when.setEditInputText(item.id, item.text);
-    driver.when.confirmBtnClick(item.id);
+    const itemDriver = driver.get.item(item.id);
+    itemDriver.when.editBtnClick();
+    itemDriver.when.setInputText(item.text);
+    itemDriver.when.confirmBtnClick();
 
     await waitFor(() => {
       expect(driver.get.doesItemExist(item)).toBe(true);
@@ -73,8 +81,9 @@ describe("Main component", () => {
       expect(driver.get.doesItemExist(item)).toBe(true);
     });
 
-    driver.when.checkBtnClick(item.id);
-    
+    const itemDriver = driver.get.item(item.id);
+    itemDriver.when.checkBtnClick();
+
     item.check = !item.check;
 
     await waitFor(() => {
